@@ -7,7 +7,9 @@
  * 1. Dashboard "Review needed": accepting a new normal with the keyboard keeps focus on the page (on the updated
  *    advisory) instead of dropping it to <body>. The accept call is stubbed in the browser, so the database is untouched.
  * 2. Every horizontally scrolling table can be reached with Tab, so keyboard users can scroll it at phone width.
- * 3. No page scrolls sideways at 390 px.
+ * 3. No page scrolls sideways at 390 px (Dashboard, Replay, Evidence, My status).
+ * 4. My status (/me): switching person quickly (arrow keys on the selector fire one request each) always shows the person
+ *    who is selected, even when an earlier person's answer arrives last (that answer is delayed in the browser on purpose).
  * Exits 1 on any failure.
  */
 const { chromium } = require('playwright');
@@ -48,8 +50,26 @@ function check(ok, what) {
     await page.close();
   }
 
+  // ---- 4. My status: a slow, older answer never overwrites the selected person ----
+  {
+    const page = await ctx.newPage();
+    await page.goto(`${BASE}/me?crew=cdr-vega`);
+    await page.waitForSelector('#me-body:not([hidden])');
+    await page.route('**/api/readiness/fe-sato', async (route) => { await new Promise((r) => setTimeout(r, 1500)); route.continue(); });
+    const band = (id) => page.evaluate(async (i) => (await (await fetch(`/api/readiness/${i}`)).json()).readiness.band, id);
+    const expected = await band('plt-okafor');
+    check(expected !== await band('fe-sato'), '/me race check is meaningful (the two people differ in the demo data)');
+    await page.focus('#me-select');
+    await page.selectOption('#me-select', 'fe-sato');      // answers late
+    await page.selectOption('#me-select', 'plt-okafor');   // the person actually chosen
+    await page.waitForTimeout(2500);
+    const chip = (await page.textContent('#me-chip')).trim();
+    check(chip === expected, `/me: after a quick switch the selected person's status is shown (${chip}, expected ${expected})`);
+    await page.close();
+  }
+
   // ---- 2 and 3. tables reachable by Tab; no sideways scroll ----
-  for (const path of ['/dashboard', '/replay', '/evidence']) {
+  for (const path of ['/dashboard', '/replay', '/evidence', '/me']) {
     const page = await ctx.newPage();
     await page.goto(BASE + path);
     await page.waitForTimeout(1200);

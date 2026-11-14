@@ -26,10 +26,14 @@ function actions(r, id) {
   return a;
 }
 
+let shownId = null;   // the person currently chosen; a slower, older answer must never overwrite them
+
 async function show(id) {
+  shownId = id;
   history.replaceState(null, "", `?crew=${encodeURIComponent(id)}`);
   try {
     const data = await api(`/api/readiness/${encodeURIComponent(id)}`);
+    if (id !== shownId) return;            // the person changed while this was loading (e.g. arrow keys on the selector)
     const r = data.readiness;
     $("me-body").hidden = false;
     $("me-chip").innerHTML = bandChip(r);
@@ -44,6 +48,7 @@ async function show(id) {
     $("me-actions").innerHTML = acts.join("");
     art.setSessions(data.trend, r.band);
   } catch (err) {
+    if (id !== shownId) return;
     $("me-sentence").textContent = `Could not load: ${err.message}`;
     $("me-body").hidden = false;
   }
