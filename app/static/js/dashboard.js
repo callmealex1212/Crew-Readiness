@@ -39,7 +39,6 @@ function item(entry) {
 function mark(id) {
   list.querySelectorAll(".crew-item").forEach((el) => {
     const on = el.dataset.id === id;
-    el.setAttribute("aria-selected", String(on));
     el.setAttribute("aria-pressed", String(on));
   });
 }
