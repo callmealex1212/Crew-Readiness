@@ -63,15 +63,17 @@
     <div class="label"><span class="idx">03b</span>At the real alert level</div>
     <div class="body">
       <p class="muted small" style="max-width:62ch">The same comparison at the level the product actually uses (YELLOW at a score of 1.0), with no matching.
-        <strong>Synthetic data.</strong> Both columns matter: fewer false alerts is only a win if real changes are still caught.</p>
+        <strong>Synthetic data.</strong> Both columns matter: fewer false alerts is only a win if real changes are still caught. Brackets are 95 % intervals from resampling the simulated people; they say how much the result depends on which simulated people we drew, not how it would do on real people.</p>
       <div class="table-wrap" role="region" aria-label="Real alert level table" tabindex="0">
         <table class="evidence">
           <thead><tr><th>Slowdown</th><th>Detected, before</th><th>Detected, now</th><th>False alerts, before</th><th>False alerts, now</th></tr></thead>
           <tbody>
           {% for r in data.operating_point %}
             <tr><td>{{ (r.slowdown * 100) | round(0) | int }} %</td>
-              <td class="num">{{ '%.2f' | format(r.before.detection) }}</td><td class="num">{{ '%.2f' | format(r.now.detection) }}</td>
-              <td class="num">{{ '%.1f' | format(r.before.false_alerts * 100) }} %</td><td class="num"><strong>{{ '%.1f' | format(r.now.false_alerts * 100) }} %</strong></td></tr>
+              <td class="num">{{ '%.2f' | format(r.before.detection) }}{% if r.before.detection_ci %} <span class="ci">({{ '%.2f' | format(r.before.detection_ci[0]) }} to {{ '%.2f' | format(r.before.detection_ci[1]) }})</span>{% endif %}</td>
+              <td class="num">{{ '%.2f' | format(r.now.detection) }}{% if r.now.detection_ci %} <span class="ci">({{ '%.2f' | format(r.now.detection_ci[0]) }} to {{ '%.2f' | format(r.now.detection_ci[1]) }})</span>{% endif %}</td>
+              <td class="num">{{ '%.1f' | format(r.before.false_alerts * 100) }} %{% if r.before.false_alerts_ci %} <span class="ci">({{ '%.1f' | format(r.before.false_alerts_ci[0] * 100) }} to {{ '%.1f' | format(r.before.false_alerts_ci[1] * 100) }})</span>{% endif %}</td>
+              <td class="num"><strong>{{ '%.1f' | format(r.now.false_alerts * 100) }} %</strong>{% if r.now.false_alerts_ci %} <span class="ci">({{ '%.1f' | format(r.now.false_alerts_ci[0] * 100) }} to {{ '%.1f' | format(r.now.false_alerts_ci[1] * 100) }})</span>{% endif %}</td></tr>
           {% endfor %}
           </tbody>
         </table>
@@ -79,6 +81,34 @@
     </div>
   </div>
 </section>
+
+{% if data.budget_calibration %}
+<section class="section">
+  <div class="grid">
+    <div class="label"><span class="idx">03c</span>What the alert level stands for</div>
+    <div class="body">
+      <p style="max-width:62ch">A <strong>false-alert budget</strong> of 1 in 20 means: on a normal session, about 1 in 20 would be flagged by chance.
+        The product's YELLOW level stands for about <strong>1 normal session in {{ data.budget_calibration.shipped.one_in | round(0) | int }}</strong> on simulated data.
+        Below, a cutoff is fitted on some simulated people and then measured on <em>other</em> people it never saw
+        ({{ data.budget_calibration.people }} people, {{ data.budget_calibration.normal_sessions }} normal sessions). <strong>Synthetic data.</strong></p>
+      <div class="table-wrap" role="region" aria-label="Alert budget table" tabindex="0">
+        <table class="evidence">
+          <thead><tr><th>Budget</th><th>Cutoff</th><th>False alerts on held-out people</th><th>95 % interval</th></tr></thead>
+          <tbody>
+          {% for r in data.budget_calibration.rows %}
+            <tr><td>1 in {{ (1 / r.budget) | round(0) | int }}</td><td class="num">{{ '%.2f' | format(r.cutoff) }}</td>
+              <td class="num"><strong>{{ '%.1f' | format(r.observed * 100) }} %</strong></td>
+              <td class="num">{{ '%.1f' | format(r.ci95[0] * 100) }} % to {{ '%.1f' | format(r.ci95[1] * 100) }} %</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="muted small" style="max-width:62ch">On target for held-out simulated people, so the <em>method</em> of choosing a cutoff for a budget works on simulated data.
+        Some people sit above the average, but about as many as chance alone would give at this few sessions each. Real people may differ: that is what a real pilot is for.</p>
+    </div>
+  </div>
+</section>
+{% endif %}
 
 <section class="section">
   <div class="grid">

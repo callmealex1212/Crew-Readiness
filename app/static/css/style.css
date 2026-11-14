@@ -373,3 +373,5 @@ table.evidence td.num { font-size: 15px; }
 .replay-controls input[type="range"] { accent-color: var(--ink); width: 100%; }
 .replay-chart { height: 340px; }
 .replay-controls [hidden] { display: none; }
+
+.ci { color: var(--muted); font-size: 12px; white-space: nowrap; }

@@ -9,7 +9,7 @@ Work on separate branches, small PRs, and run `pytest -q` and `node scripts/chec
 ## Block 1: close the visible gaps (first 4 hours)
 | Who | Task | Done when |
 |---|---|---|
-| **You** | **L-1: `mission_advisory()`** in `app/mission.py`. The spec is `tests/test_mission.py`; delete the skip line and make the 8 tests pass. Your decisions from earlier (ignore a missing backup, name a backup, unknown = flag it, flag both) are the rules. | Mission page shows a real advisory instead of "TODO" |
+| **Done** | **L-1: `mission_advisory()`** is implemented (by the assistant, as the Lead delegated). Rules and the three edge decisions are in `docs/PLAN.md` (D-5); **the Lead may overrule any of them**, and `tests/test_mission.py` changes with the decision. | The Mission page shows a real advisory instead of "TODO" |
 | **Teammate** | **A-1: attention check** (`app/static/js/attention.js`, spec in `docs/TEAM_GUIDE.md`). A short reaction-time check, optional, results posted to `/api/attention`. | Page works end to end; no "Not implemented yet" |
 | **Teammate** | **R-1: Privacy & limits page** (`app/templates/about.html`): retention and access (as a proposal), confounders (keyboard, language, time of day, sleep, practice), what we validated and did not (copy from `docs/SUBMISSION.md`). | No TODO box; every claim matches `docs/ML_RESULTS.md` |
 

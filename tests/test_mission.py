@@ -1,16 +1,11 @@
 """
 SPEC for task L-1 (Team Lead): mission_advisory().
 
-These tests are SKIPPED until you implement app/mission.py. Workflow:
-  1. Decide the rules (write them in docs/PLAN.md, decision D-5).
-  2. Adjust these tests if your decisions differ. The tests ARE the spec.
-  3. Delete the skip marker below, then make them pass.
+SPEC for the mission advisory (decision D-5 in docs/PLAN.md). The tests ARE the spec.
 """
 import pytest
 
 from app.mission import mission_advisory
-
-pytestmark = pytest.mark.skip(reason="TODO(L-1): implement mission_advisory, then remove this marker")
 
 BANNED_WORDS = ("fatigue", "fatigued", "impaired", "unfit", "diagnos")
 
@@ -70,5 +65,49 @@ def test_no_clean_backup_requires_review_and_flags_both():
     assert out["level"] == "REVIEW"
     text = " ".join(out["messages"])
     assert "Kai" in text and "Lena" in text
-    # TODO(you, L-1): pin down "names nobody as a replacement" as an assertion on the output.
-    # Which words or structure in `suggested_actions` would prove it? Decide, then write it.
+    # "names nobody as a replacement": no action offers anyone as cover, and both flagged people appear only as people to review
+    actions = " ".join(out["suggested_actions"]).lower()
+    assert not any(w in actions for w in ("replace", "instead", "cover", "option", "consider", "swap", "take over", "assign"))
+    assert "kai" in actions and "lena" in actions                      # both are asked to be reviewed or checked in with
+
+
+# ---- the three open edges, settled when L-1 was implemented (docs/PLAN.md) ----
+
+def test_red_backup_with_green_primary_still_requires_review():
+    out = mission_advisory([a("Primary pilot", "Kai", "GREEN"), a("Backup pilot", "Lena", "RED")])
+    assert out["level"] == "REVIEW"
+    assert "Lena" in " ".join(out["messages"])
+    assert any("Kai" in s for s in out["suggested_actions"])           # the GREEN primary may be named as an option
+
+
+def test_red_with_a_calibrating_member_is_review_and_the_unknown_is_never_an_option():
+    out = mission_advisory([a("Primary pilot", "Kai", "RED"),
+                            a("Backup pilot", "Lena", None, status="CALIBRATING", confidence="NONE")])
+    assert out["level"] == "REVIEW"
+    assert any("baseline" in m.lower() for m in out["messages"])       # reported as unknown
+    assert not any("option" in s.lower() or "consider" in s.lower() for s in out["suggested_actions"])
+
+
+def test_low_confidence_adds_a_caveat_but_never_softens_the_level():
+    low = mission_advisory([a("Primary pilot", "Kai", "YELLOW", confidence="LOW")])
+    med = mission_advisory([a("Primary pilot", "Kai", "YELLOW", confidence="MEDIUM")])
+    assert low["level"] == med["level"] == "CHECK_IN"
+    assert "lower confidence" in " ".join(low["messages"]).lower()
+    assert "lower confidence" not in " ".join(med["messages"]).lower()
+
+
+# ---- further guarantees ----
+
+def test_non_critical_roles_never_appear_in_the_text():
+    out = mission_advisory([a("Primary pilot", "Kai", "GREEN"), a("Comms", "Tomas", "RED", critical=False)])
+    assert "Tomas" not in " ".join(out["messages"] + out["suggested_actions"])
+
+
+def test_no_critical_roles_is_nominal_and_says_so():
+    out = mission_advisory([a("Comms", "Tomas", "RED", critical=False)])
+    assert out["level"] == "NOMINAL" and out["messages"]
+
+
+def test_insufficient_data_is_unknown_not_fine():
+    out = mission_advisory([a("Primary pilot", "Kai", None, status="INSUFFICIENT_DATA", confidence="NONE")])
+    assert out["level"] == "CHECK_IN"

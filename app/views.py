@@ -14,6 +14,12 @@ def home():
     return render_template("landing.html", active="home")
 
 
+@bp.get("/me")
+def me():
+    """Crew-first view: a person's own status, in plain words, before anyone else's."""
+    return render_template("me.html", active="me")
+
+
 @bp.get("/dashboard")
 def dashboard():
     return render_template("dashboard.html", active="dashboard")

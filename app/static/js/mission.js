@@ -29,7 +29,7 @@ async function load() {
     <p><span class="chip chip-${levelClass}">${esc(adv.level)}</span></p>
     <ul class="reasons">${adv.messages.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
     ${adv.suggested_actions.length
-      ? `<h3>Suggested actions</h3><ul class="reasons">${adv.suggested_actions.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`
+      ? `<h3 class="cap">Suggested actions</h3><ul class="reasons">${adv.suggested_actions.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`
       : ""}`;
 }
 

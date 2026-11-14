@@ -16,7 +16,7 @@ const { chromium } = require('playwright');
 
 const BASE = process.env.BASE_URL || 'http://127.0.0.1:5050';
 const WIDTHS = [1440, 1280, 1024, 390];
-const PATHS = ['/', '/dashboard', '/monitor', '/mission', '/about', '/attention', '/evidence', '/replay'];
+const PATHS = ['/', '/me', '/dashboard', '/monitor', '/mission', '/about', '/attention', '/evidence', '/replay'];
 const TOLERANCE = 1.5;
 
 // everything that should sit on the grid

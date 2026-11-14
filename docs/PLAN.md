@@ -114,10 +114,11 @@ The mission advisory is driven by **critical roles only**. Level = the highest r
 | **No clean backup** (e.g. pilot RED, backup YELLOW) | `REVIEW` | Flag **both**; name **nobody** as a replacement; humans decide who covers |
 | Any **non-critical** role, any band | no effect | Shown in the assignments table only; never changes the level |
 
-**Open edges, to be settled by whoever implements L-1 (record the answer here):**
-- Primary GREEN but backup RED: does a RED backup alone force `REVIEW`? (The table's "any critical RED" says yes.)
-- One critical member RED and another CALIBRATING: wording when both apply.
-- Does LOW confidence soften the message? (Not yet decided; the band currently speaks for itself.)
+**Open edges: settled when L-1 was implemented** (by the assistant, as delegated by the Lead; **the Lead may overrule any of these**, and the tests in `tests/test_mission.py` then change with the decision):
+- **Primary GREEN, backup RED:** a RED backup alone forces `REVIEW` (the table's "any critical RED"). The message names the RED person and role, and the GREEN primary may be named as an option for the reviewer.
+- **One critical member RED, another CALIBRATING:** `REVIEW`. The CALIBRATING member is reported as unknown ("No baseline yet ... unknown, not fine") and is never named as an option, because an unknown person is not a clean backup. With nobody GREEN, nobody is named as cover.
+- **LOW confidence:** never softens the level (safety first). It adds a caveat to the wording ("Few sessions so far, so lower confidence.").
+- **"Names nobody as a replacement"** is pinned as: no suggested action contains replacement words (replace, instead, cover, option, consider, swap, take over, assign), and both flagged people appear only as people to review.
 
 > **Recommendation for D-7 (Lead decides):** the presenter creates a `team_test` profile and records ≥ 5 real sessions **on the demo laptop** on Nov 14 evening. On stage, a deliberate perturbation (e.g. non-dominant hand) produces a visible, honest deviation. The seeded fictional crew remains as the context and as the fallback.
 

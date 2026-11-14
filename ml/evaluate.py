@@ -77,3 +77,35 @@ def evaluate(detector: Detector, *, shape: str, magnitude: float, length: int, s
             delays.append(first)
     return Result(magnitude, n_people, hit / max(ev_total, 1), alerted_people / n_people,
                   float(np.median(delays)) if delays else None, fa / max(normal, 1))
+
+
+def evaluate_ci(detector: Detector, *, shape: str, magnitude: float, length: int, start: int = 15, n_sessions: int = 40,
+                n_people: int = 200, alert_threshold: float = 1.0, seed: int = 0, pop: PopulationSpec = PopulationSpec(),
+                n_boot: int = 1000) -> dict:
+    """Same simulation and the same point estimates as `evaluate`, plus 95 % bootstrap intervals over PEOPLE (not sessions):
+    resample the simulated people with replacement and recompute the pooled rates."""
+    rng = np.random.default_rng(seed)
+    ev = Event(shape=shape, start=start, length=length, magnitude=magnitude)
+    rows = []                                          # per person: event hits, event sessions, false alerts, normal sessions
+    for _ in range(n_people):
+        sessions, truth = simulate_person(rng, n_sessions, pop, events=(ev,))
+        alerts = _alerts(detector, sessions, alert_threshold)
+        h = n_ev = fa = n_norm = 0
+        for i, (a, t) in enumerate(zip(alerts, truth)):
+            if a is None:
+                continue
+            if t > 0:
+                n_ev += 1; h += bool(a)
+            elif i < start:
+                n_norm += 1; fa += bool(a)
+        rows.append((h, n_ev, fa, n_norm))
+    r = np.array(rows, dtype=float)
+    det = r[:, 0].sum() / max(r[:, 1].sum(), 1)
+    far = r[:, 2].sum() / max(r[:, 3].sum(), 1)
+    boot = np.random.default_rng(seed + 10_000)
+    dets, fars = [], []
+    for _ in range(n_boot):
+        s = r[boot.integers(0, len(r), len(r))]
+        dets.append(s[:, 0].sum() / max(s[:, 1].sum(), 1)); fars.append(s[:, 2].sum() / max(s[:, 3].sum(), 1))
+    q = lambda v: [round(float(np.quantile(v, .025)), 4), round(float(np.quantile(v, .975)), 4)]
+    return {"detection": float(det), "false_alerts": float(far), "detection_ci": q(dets), "false_alerts_ci": q(fars)}

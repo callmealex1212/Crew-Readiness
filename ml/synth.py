@@ -47,6 +47,7 @@ class PopulationSpec:
     resp_ms: tuple[float, float] = (1100.0, 1800.0)
     resp_cv: float = 0.11
     pause_overdispersion: float = 0.0                  # 0 = Poisson pauses; >0 = burstier (gamma-mixed rate, variance = mean*(1+od*mean))
+    noise_sigma: float = 0.0                          # people differ in how erratic they are: per-person multiplier exp(N(0, sigma)) on the noise; 0 = everyone alike
     learning_per_session: float = 0.0                  # slow drift: fractional change per session (negative = getting faster)
 
 
@@ -63,15 +64,16 @@ def simulate_person(rng: np.random.Generator, n: int, pop: PopulationSpec = Popu
                     events: tuple[Event, ...] = (), effect: EffectModel = EffectModel()):
     """Return (sessions, truth). sessions: list of feature dicts. truth[i]: summed event strength at i (0 = normal)."""
     iki0 = rng.uniform(*pop.iki_ms)
+    noise = float(np.exp(rng.normal(0.0, pop.noise_sigma))) if pop.noise_sigma > 0 else 1.0
     pause0 = rng.uniform(*pop.pause_rate)
     resp0 = rng.uniform(*pop.resp_ms)
     sessions, truth = [], []
     for i in range(n):
         f = sum(e.magnitude * e.strength(i) for e in events)
         drift = (1.0 + pop.learning_per_session) ** i
-        iki = max(40.0, rng.normal(iki0, pop.iki_cv * iki0) * drift) * (1 + f)
+        iki = max(40.0, rng.normal(iki0, noise * pop.iki_cv * iki0) * drift) * (1 + f)
         iqr = max(5.0, rng.normal(pop.iqr_ratio * iki0, 0.15 * pop.iqr_ratio * iki0) * drift) * (1 + f)
-        resp = max(300.0, rng.normal(resp0, pop.resp_cv * resp0) * drift) * (1 + f)
+        resp = max(300.0, rng.normal(resp0, noise * pop.resp_cv * resp0) * drift) * (1 + f)
         rate = pause0 * (1 + effect.pause_gain * f)
         if pop.pause_overdispersion > 0:
             rate *= rng.gamma(1 / pop.pause_overdispersion, pop.pause_overdispersion)

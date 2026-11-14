@@ -83,39 +83,137 @@
       "slowdown": 0.06,
       "before": {
         "detection": 0.26,
-        "false_alerts": 0.119
+        "false_alerts": 0.119,
+        "detection_ci": [
+          0.24,
+          0.29
+        ],
+        "false_alerts_ci": [
+          0.106,
+          0.132
+        ]
       },
       "now": {
         "detection": 0.18,
-        "false_alerts": 0.047
+        "false_alerts": 0.047,
+        "detection_ci": [
+          0.16,
+          0.2
+        ],
+        "false_alerts_ci": [
+          0.04,
+          0.055
+        ]
       }
     },
     {
       "slowdown": 0.1,
       "before": {
         "detection": 0.42,
-        "false_alerts": 0.13
+        "false_alerts": 0.13,
+        "detection_ci": [
+          0.39,
+          0.45
+        ],
+        "false_alerts_ci": [
+          0.116,
+          0.144
+        ]
       },
       "now": {
         "detection": 0.35,
-        "false_alerts": 0.047
+        "false_alerts": 0.047,
+        "detection_ci": [
+          0.32,
+          0.37
+        ],
+        "false_alerts_ci": [
+          0.039,
+          0.056
+        ]
       }
     },
     {
       "slowdown": 0.15,
       "before": {
         "detection": 0.62,
-        "false_alerts": 0.127
+        "false_alerts": 0.127,
+        "detection_ci": [
+          0.6,
+          0.65
+        ],
+        "false_alerts_ci": [
+          0.114,
+          0.141
+        ]
       },
       "now": {
         "detection": 0.58,
-        "false_alerts": 0.048
+        "false_alerts": 0.048,
+        "detection_ci": [
+          0.56,
+          0.61
+        ],
+        "false_alerts_ci": [
+          0.041,
+          0.055
+        ]
       }
     }
   ],
+  "budget_calibration": {
+    "people": 300,
+    "normal_sessions": 10500,
+    "shipped": {
+      "cutoff": 1.0,
+      "false_alert_rate": 0.0418,
+      "one_in": 23.9,
+      "share_of_people_over_2x": 0.19,
+      "share_over_2x_by_chance_alone": 0.179
+    },
+    "rows": [
+      {
+        "budget": 0.1,
+        "cutoff": 0.816,
+        "observed": 0.1,
+        "ci95": [
+          0.0941,
+          0.1061
+        ],
+        "share_over_2x_budget": 0.03,
+        "share_over_2x_by_chance_alone": 0.02,
+        "worst_person": 0.257
+      },
+      {
+        "budget": 0.05,
+        "cutoff": 0.961,
+        "observed": 0.0504,
+        "ci95": [
+          0.0462,
+          0.0551
+        ],
+        "share_over_2x_budget": 0.12,
+        "share_over_2x_by_chance_alone": 0.096,
+        "worst_person": 0.171
+      },
+      {
+        "budget": 0.02,
+        "cutoff": 1.136,
+        "observed": 0.0202,
+        "ci95": [
+          0.0175,
+          0.0231
+        ],
+        "share_over_2x_budget": 0.183,
+        "share_over_2x_by_chance_alone": 0.155,
+        "worst_person": 0.114
+      }
+    ]
+  },
   "commands": [
     "python -m ml.compare 0.5",
     "python -m ml.stress_prior",
+    "python -m ml.calibrate_cutoffs",
     "python -m ml.export_results"
   ]
 }

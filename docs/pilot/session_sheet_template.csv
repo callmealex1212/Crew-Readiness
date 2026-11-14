@@ -1,0 +1,13 @@
+pseudonym,consent,session_number,condition,perturbation,issue
+pilot-01,yes,1,normal,none,none
+pilot-01,yes,2,normal,none,none
+pilot-01,yes,3,normal,none,none
+pilot-01,yes,4,normal,none,none
+pilot-01,yes,5,normal,none,none
+pilot-01,yes,6,normal,none,none
+pilot-01,yes,7,normal,none,none
+pilot-01,yes,8,normal,none,none
+pilot-01,yes,9,perturbed,non_dominant_hand,none
+pilot-01,yes,10,perturbed,non_dominant_hand,none
+pilot-01,yes,11,perturbed,non_dominant_hand,none
+pilot-01,yes,12,normal,none,none

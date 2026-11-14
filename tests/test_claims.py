@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-PAGES = ["/", "/dashboard", "/monitor", "/attention", "/mission", "/replay", "/evidence", "/about"]
+PAGES = ["/", "/me", "/dashboard", "/monitor", "/attention", "/mission", "/replay", "/evidence", "/about"]
 TOUCHY = re.compile(r"fatigue|impair|cognitive|illness|unfit|diagnos|fitness for duty", re.I)
 DENIES = re.compile(r"\bnot\b|\bno\b|\bnever\b|\bnothing\b|\bnor\b|\bwithout\b|\bsays nothing\b|\bdoes not\b", re.I)
 BANNED = ("% accurate", "accuracy of", "proven to", "guaranteed", "ai-powered", "clinically proven", "cleared for duty")
@@ -60,6 +60,5 @@ def test_no_unfinished_todo_text_on_finished_pages(client, path):
     assert "TODO" not in text_of(client.get(path).data.decode())
 
 
-@pytest.mark.xfail(reason="L-1 (mission_advisory) is being implemented by the team lead", strict=False)
 def test_mission_advisory_is_implemented(client):
     assert client.get("/api/mission").get_json()["advisory"]["level"] != "TODO"

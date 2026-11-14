@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}My status{% endblock %}
+{% block content %}
+<section class="pagehead grid">
+  <div class="label">My status</div>
+  <div class="body">
+    <h1 class="title">Your own status, first.</h1>
+    <p class="lede">Compared only with your own usual pattern, and shown to you before anyone else. It says what changed and what you can do. It never says why, and it never decides.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="grid">
+    <div class="label"><span class="idx">01</span>Who are you?</div>
+    <div class="body">
+      <label for="me-select">Crew member</label>
+      <select id="me-select"><option>Loading…</option></select>
+      <p class="fineprint" style="margin-top:12px">Prototype with a fictional crew and synthetic data. It has no accounts, so you pick who you are.</p>
+    </div>
+  </div>
+</section>
+
+<div id="me-body" hidden>
+  <section class="section">
+    <div class="grid">
+      <div class="label"><span class="idx">02</span>Today</div>
+      <div class="body">
+        <div id="me-chip"></div>
+        <p id="me-sentence" class="advisory" tabindex="-1" aria-live="polite"></p>
+        <p id="me-meta" class="detail-meta"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="grid">
+      <div class="label"><span class="idx">03</span>What changed</div>
+      <div class="body"><ul id="me-reasons" class="reasons"></ul></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="grid">
+      <div class="label"><span class="idx">04</span>Your own pattern</div>
+      <div class="body">
+        <figure class="art" style="grid-column: auto" aria-labelledby="me-art-caption">
+          <div class="art-stage">
+            <canvas id="me-ridge" role="img" aria-label="One line per recent session of yours, oldest at the top. Flat lines match your own usual pattern; rises show where timing differed from it."></canvas>
+            <div class="art-readout" id="me-readout" aria-hidden="true"></div>
+            <div class="art-axis" id="me-axis" aria-hidden="true"></div>
+          </div>
+          <figcaption class="art-foot"><p class="art-caption" id="me-art-caption">One line per session, oldest at the top. Flat means that session matched your own usual pattern.</p></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="grid">
+      <div class="label"><span class="idx">05</span>What you can do</div>
+      <div class="body">
+        <ul id="me-actions" class="reasons"></ul>
+        <p class="fineprint" style="margin-top:16px">Timing changes have many ordinary causes: a different keyboard, time of day, sleep, practice. This software cannot tell which one it is, and it says nothing about your health.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="grid">
+      <div class="label"><span class="idx">06</span>Who sees this</div>
+      <div class="body">
+        <p style="max-width:62ch">The proposal is that <strong>you see your own numbers first, and sharing them is your choice</strong>. This prototype has no accounts, so anyone who opens it can see every profile, and every profile here is fictional. The page loads nothing from other hosts and reads its data only from this app. On board, the app would run on the crew computer itself, so nothing would need a link to the ground. Details and limits: <a href="{{ url_for('views.about') }}">Privacy &amp; limits</a>.</p>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/me.js') }}"></script>
+{% endblock %}

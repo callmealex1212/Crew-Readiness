@@ -1,11 +1,11 @@
 # Submission copy (NASA Space Apps 2026)
 
-Fill the three `[PLACEHOLDERS]`; everything else is drawn from the product and `docs/ML_RESULTS.md`. Numbers are checked against
+Fill the remaining `[PLACEHOLDERS]` (team name, challenge title, AI tool name); everything else is drawn from the product and `docs/ML_RESULTS.md`. Numbers are checked against
 `app/results_data.json` by `tests/test_submission.py`, so they cannot drift. Every result is on **simulated** data.
 
 - Team: `[TEAM NAME]`
 - Challenge: `[EXACT CHALLENGE TITLE FROM THE NASA SPACE APPS LIST]`
-- Links: `[REPO URL]` · live: https://crew-readiness-mu.vercel.app (its database resets itself; run it locally for the demo)
+- Links: https://github.com/Davuddevelop/Crew-Readiness · live: https://crew-readiness-mu.vercel.app (its database resets itself; run it locally for the demo)
 
 ## Project name
 Crew Readiness

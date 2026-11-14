@@ -29,6 +29,7 @@
           </a>
         </div>
         <nav class="nav-links" aria-label="Primary">
+          <a href="{{ url_for('views.me') }}" class="{{ 'active' if active == 'me' }}">My status</a>
           <a href="{{ url_for('views.monitor') }}" class="{{ 'active' if active == 'monitor' }}">Monitoring</a>
           <a href="{{ url_for('views.attention') }}" class="{{ 'active' if active == 'attention' }}">Attention</a>
           <a href="{{ url_for('views.mission') }}" class="{{ 'active' if active == 'mission' }}">Mission</a>

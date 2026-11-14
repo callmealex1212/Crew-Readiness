@@ -35,6 +35,27 @@
     </div>
   </div>
 </section>
+
+<section class="section" id="no-ground-link">
+  <div class="grid">
+    <div class="label"><span class="idx">03</span>If the ground cannot answer quickly</div>
+    <div class="body">
+      <p class="lede">On a long mission, a message to the ground can take minutes each way and some hours have no link at all. The crew still has to decide who does a critical task. This is the situation the tool is built around, as a prototype.</p>
+      <div class="table-wrap">
+        <table class="evidence">
+          <thead><tr><th>Question</th><th>What the tool does</th><th>Who decides</th></tr></thead>
+          <tbody>
+            <tr><td>Did my own pattern change?</td><td>Shows <a href="{{ url_for('views.me') }}">My status</a> on the device, against my own earlier sessions only.</td><td>Me</td></tr>
+            <tr><td>Should someone take a second look before the operation?</td><td>Suggests a short check-in and says why, in plain words.</td><td>The crew, or whoever the mission rules name</td></tr>
+            <tr><td>Is a new keyboard, glove or routine just my new normal?</td><td>Lets a person accept it; the baseline then restarts.</td><td>The person</td></tr>
+            <tr><td>Does anything leave the device?</td><td>Nine timing numbers per session stay in the local database. No typed text, no network at runtime.</td><td>Not applicable</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fineprint" style="margin-top:20px">Not tested: real crews, microgravity, gloves, shared tablets, or any real mission. The scenario above is fictional and the benchmark is simulated. This is not a medical or fitness-for-duty tool.</p>
+    </div>
+  </div>
+</section>
 {% endblock %}
 {% block scripts %}
 <script type="module" src="{{ url_for('static', filename='js/mission.js') }}"></script>

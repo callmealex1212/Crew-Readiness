@@ -10,7 +10,8 @@ import numpy as np
 
 from . import candidates
 from .compare import N_PEOPLE, N_SESS, collect
-from .evaluate import evaluate, incumbent_detector
+from .calibrate_cutoffs import BUDGETS, heldout_calibration, null_scores, what_budget_is_the_shipped_cutoff
+from .evaluate import evaluate, evaluate_ci, incumbent_detector
 
 FAR, SEED = 0.05, 7
 OUT = Path(__file__).resolve().parents[1] / "app" / "results_data.json"
@@ -43,16 +44,23 @@ if __name__ == "__main__":
     for mag in (0.06, 0.10, 0.15):
         row = {"slowdown": mag}
         for key, det in (("before", incumbent_detector), ("now", candidates.candidate_nb)):
-            r = evaluate(det, shape="step", magnitude=mag, length=5, n_people=N_PEOPLE, seed=SEED, alert_threshold=1.0)
-            row[key] = {"detection": round(r.detection_rate, 2), "false_alerts": round(r.false_alert_rate, 3)}
+            r = evaluate_ci(det, shape="step", magnitude=mag, length=5, n_people=N_PEOPLE, seed=SEED, alert_threshold=1.0)
+            row[key] = {"detection": round(r["detection"], 2), "false_alerts": round(r["false_alerts"], 3),
+                        "detection_ci": [round(x, 2) for x in r["detection_ci"]], "false_alerts_ci": [round(x, 3) for x in r["false_alerts_ci"]]}
         op.append(row)
         print(row, flush=True)
+    # alert budget: a cutoff fitted on some people, measured on held-out people (ml/calibrate_cutoffs.py)
+    people = null_scores(n_people=300)
+    budget = {"people": len(people), "normal_sessions": int(sum(len(p) for p in people)),
+              "shipped": what_budget_is_the_shipped_cutoff(people),
+              "rows": [heldout_calibration(people, b) for b in BUDGETS]}
+    print(budget, flush=True)
     OUT.write_text(json.dumps({
         "synthetic": True,
         "setup": {"false_alert_rate": FAR, "event": "5-session step slowdown", "people_per_cell": N_PEOPLE,
                   "sessions_per_person": N_SESS, "seed": SEED},
         "incumbent_false_alerts_at_yellow": round(fa, 3),
-        "table": table, "stress": stress, "operating_point": op,
-        "commands": ["python -m ml.compare 0.5", "python -m ml.stress_prior", "python -m ml.export_results"],
+        "table": table, "stress": stress, "operating_point": op, "budget_calibration": budget,
+        "commands": ["python -m ml.compare 0.5", "python -m ml.stress_prior", "python -m ml.calibrate_cutoffs", "python -m ml.export_results"],
     }, indent=2) + "\n")
     print("wrote", OUT)

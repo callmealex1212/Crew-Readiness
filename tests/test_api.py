@@ -164,3 +164,17 @@ def test_scrolling_tables_are_reachable_by_keyboard(client):
         assert wraps, path
         for w in wraps:
             assert 'tabindex="0"' in w and 'role="region"' in w and "aria-label=" in w, (path, w)
+
+
+def test_evidence_budget_table_and_intervals_come_from_the_file(client):
+    import json
+    from app.views import RESULTS_FILE
+    data = json.loads(RESULTS_FILE.read_text())
+    html = client.get("/evidence").data.decode()
+    assert "What the alert level stands for" in html
+    b = data["budget_calibration"]
+    assert f"1 normal session in {round(b['shipped']['one_in'])}" in html
+    for r in b["rows"]:
+        assert f"{r['observed'] * 100:.1f} %" in html and f"{r['cutoff']:.2f}" in html
+    r = data["operating_point"][1]["now"]
+    assert f"{r['detection_ci'][0]:.2f} to {r['detection_ci'][1]:.2f}" in html          # an interval is shown, from the file
