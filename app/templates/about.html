@@ -48,17 +48,54 @@
 
 <section class="section">
   <div class="grid">
-    <div class="label"><span class="idx">04</span>To do</div>
+    <div class="label"><span class="idx">04</span>Retention &amp; access</div>
     <div class="body">
-      <div class="todo-box">
-        <h2 class="h2" style="margin-bottom:12px">TODO(R-1, Member 4): complete this page</h2>
-        <ul class="reasons">
-          <li>Retention and access: who can see a crew member's data, and for how long (proposal).</li>
-          <li>Known confounders: keyboard, language, task difficulty, time of day, sleep, caffeine, practice effect.</li>
-          <li>Our validation: number of participants, sessions each, what we did and did not show.</li>
-          <li>Sources: NASA challenge resources and research, each with one line on <em>how</em> it informed us.</li>
-        </ul>
-      </div>
+      <p style="max-width:62ch"><strong>Proposal for any deployment, not a feature of this prototype:</strong> agree a short,
+        documented retention period before collection; limit access to the crew member and named human reviewers with a need to
+        review a flagged change; and let a reviewer remove or accept a new normal with a visible audit record. The prototype has no
+        accounts. When a reviewer accepts a new normal, it records a timestamp, not who accepted it.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="grid">
+    <div class="label"><span class="idx">05</span>Context matters</div>
+    <div class="body">
+      <p style="max-width:62ch">A timing change can have ordinary explanations. Keyboard and device changes, language and task
+        familiarity, time of day, sleep, and practice effect can all change task timing. A flag is a prompt for a human check-in,
+        not an explanation of its cause.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="grid">
+    <div class="label"><span class="idx">06</span>What we validated</div>
+    <div class="body">
+      <p style="max-width:62ch">On simulated data only, we compared the current pause-count model with the earlier median/MAD
+        approach using the same synthetic crews: 300 simulated people per row, with 40 sessions each. At the shipped alert level,
+        normal-session false alerts fell from about 13.0% to about 4.7%; for a simulated 10% slowdown, affected sessions flagged
+        fell from 0.42 to 0.35. At a matched 5% false-alert rate, the current model detected more of the simulated changes tested.
+        These are a reproducible trade-off in our simulator, not evidence about real crews.</p>
+      <p style="max-width:62ch; margin-top:16px">We also simulated sustained changes. Keeping flagged sessions out of the baseline
+        stopped a 20% simulated slowdown from being rapidly learned as normal. A human can accept a genuine new normal, but that
+        human decision was not benchmarked.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="grid">
+    <div class="label"><span class="idx">07</span>What we did not validate</div>
+    <div class="body">
+      <ul class="reasons">
+        <li>No real people: we have no data from astronauts, crews, volunteers, or any other real participants.</li>
+        <li>No suitable licensed public dataset: we found none with enough repeated sessions per person and a licence we could cite.</li>
+        <li>Our simulator and model were both written by us. Several burstiness levels and a wrong-assumption test reduce, but do not remove, that circularity.</li>
+        <li>Total pause time is displayed as context but is not scored, so one very long pause can go unflagged.</li>
+        <li>Thresholds are illustrative. The prototype does not detect fatigue or illness, determine fitness for duty, or have NASA approval or endorsement.</li>
+      </ul>
     </div>
   </div>
 </section>
