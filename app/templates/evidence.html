@@ -43,7 +43,7 @@
       <p class="muted small" style="max-width:62ch">Share of slowed-down sessions detected when the false-alert rate is held at
         {{ (data.setup.false_alert_rate * 100) | round(0) | int }} %. Higher is better. {{ data.setup.people_per_cell }} simulated people per row.
         <strong>Synthetic data.</strong></p>
-      <div class="table-wrap">
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Matched false-alert comparison table">
         <table class="evidence">
           <thead><tr><th>Slowdown</th><th>Pause burstiness</th><th>Before (median/MAD)</th><th>Count model, simple</th><th>Count model, now</th></tr></thead>
           <tbody>
@@ -64,7 +64,7 @@
     <div class="body">
       <p class="muted small" style="max-width:62ch">The same comparison at the level the product actually uses (YELLOW at a score of 1.0), with no matching.
         <strong>Synthetic data.</strong> Both columns matter: fewer false alerts is only a win if real changes are still caught.</p>
-      <div class="table-wrap">
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Shipped alert-level comparison table">
         <table class="evidence">
           <thead><tr><th>Slowdown</th><th>Detected, before</th><th>Detected, now</th><th>False alerts, before</th><th>False alerts, now</th></tr></thead>
           <tbody>
@@ -86,7 +86,7 @@
     <div class="body">
       <p class="muted small" style="max-width:62ch">The model needs a starting guess for how bursty pausing is. We changed the guess and the true burstiness of the simulated people
         (10 % slowdown, same false-alert rate). The win barely depends on the guess, because burstiness is learned per person.</p>
-      <div class="table-wrap">
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Wrong-assumption comparison table">
         <table class="evidence">
           <thead><tr><th>Assumed guess</th><th>True burstiness none</th><th>moderate</th><th>high</th></tr></thead>
           <tbody>
