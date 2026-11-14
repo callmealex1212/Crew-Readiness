@@ -231,4 +231,48 @@
   </div>
 </section>
 {% endif %}
+{% if reliability %}
+{% set fz = reliability.fault_injection %}{% set fx = reliability.fault_injection_extra_seeds %}{% set sk = reliability.soak %}{% set cj = reliability.clock_jump %}
+<section class="section" id="reliability">
+  <div class="grid">
+    <div class="label"><span class="idx">07</span>Reliability</div>
+    <div class="body">
+      <p style="max-width:62ch">Can the software take bad input and a long mission without falling over? Measured, not claimed: hostile inputs,
+        a long simulated mission, and a clock that jumps backwards. <strong>Simulated data.</strong></p>
+      <div class="table-wrap" role="region" aria-label="Reliability table" tabindex="0">
+        <table class="evidence">
+          <thead><tr><th>Test</th><th>What was done</th><th>Result</th></tr></thead>
+          <tbody>
+            <tr><td>Hostile inputs</td>
+              <td>{{ fz.payloads }} malformed or hostile requests to the two endpoints that accept data (wrong types, NaN, infinity, huge and negative numbers, missing, extra and nested fields, huge strings, typed text in a number field)</td>
+              <td class="num"><strong>{{ fz.crashes }} crash{{ '' if fz.crashes == 1 else 'es' }}</strong></td></tr>
+            <tr><td>Hostile inputs, {{ fx.seeds | length }} more random sets</td>
+              <td>{{ fx.payloads }} more requests of the same kinds, different random choices</td>
+              <td class="num"><strong>{{ fx.crashes }} crash{{ '' if fx.crashes == 1 else 'es' }}</strong></td></tr>
+            <tr><td>Long mission</td>
+              <td>{{ sk.people }} simulated people, {{ sk.days }} days, {{ sk.sessions_per_day }} sessions a day: {{ sk.sessions_stored }} sessions stored and scored as the app does</td>
+              <td class="num">scoring {{ sk.scoring_ms.median }} ms median, {{ sk.scoring_ms.p95 }} ms p95, {{ sk.scoring_ms.max }} ms max</td></tr>
+            <tr><td>Growth over the mission</td>
+              <td>Median scoring time of the first and the last 100 calls</td>
+              <td class="num">{{ sk.scoring_ms_first_100_median }} ms, then {{ sk.scoring_ms_last_100_median }} ms</td></tr>
+            <tr><td>Storage and memory</td>
+              <td>Database size at the end; peak memory of the whole run</td>
+              <td class="num">{{ '%.1f' | format(sk.database_bytes / 1048576) }} MB; {{ sk.peak_memory_mb }} MB</td></tr>
+            <tr><td>Clock jumps backwards</td>
+              <td>One person's {{ cj.sessions }} sessions: {{ cj.jump }}</td>
+              <td class="num"><strong>{{ cj.crashes }} crash{{ '' if cj.crashes == 1 else 'es' }}</strong>; {{ 'same answers as with a correct clock' if cj.same_answers_as_forward_clock else 'answers differ from a correct clock' }}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      {% if fz.crashes or fx.crashes %}
+      <p class="small" style="max-width:62ch;margin-top:16px"><strong>Open issue.</strong> Crashes found:
+        {% for e in (fz.crash_examples + fx.crash_examples)[:3] %}{{ e.endpoint }} ({{ e.kind | replace('_', ' ') }}: {{ e.result }}){{ '; ' if not loop.last else '.' }}{% endfor %}
+        Reported, not yet fixed.</p>
+      {% endif %}
+      <p class="fineprint" style="max-width:62ch;margin-top:16px">{{ reliability.limits }} Machine: {{ reliability.machine.platform }}, Python {{ reliability.machine.python }}, {{ reliability.machine.cpus }} CPUs.
+        Regenerate: <code>{{ reliability.generated_by }}</code> ({{ reliability.generated_at }}).</p>
+    </div>
+  </div>
+</section>
+{% endif %}
 {% endblock %}
