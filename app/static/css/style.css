@@ -252,7 +252,7 @@ table.evidence td.num { font-size: 15px; }
   display: flex; align-items: center; justify-content: flex-start; text-align: left; padding: 24px; user-select: none; cursor: pointer;
 }
 .rt-stage.rt-go { background: var(--signal); border-color: var(--signal); color: var(--bg); }
-.rt-stage.rt-todo { border-style: dashed; }
+.rt-result { margin-top: 24px; max-width: 62ch; }
 .todo-box { border: 1px dashed var(--line); padding: 20px 24px; }
 
 /* ---------- dev aid: add ?grid to any URL to see the 12 columns ---------- */

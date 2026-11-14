@@ -18,25 +18,23 @@
       <select id="profile-select"><option>Loading…</option></select>
 
       <!-- The stimulus area. Click or press Space when it turns bright. -->
-      <div id="rt-stage" class="rt-stage" tabindex="0" role="button" aria-label="Reaction area">
-        <span id="rt-message">Press Start. When this box lights up, click it or press Space as fast as you can.</span>
+      <div id="rt-stage" class="rt-stage" tabindex="0" role="button" aria-pressed="false" aria-label="Reaction area">
+        <span id="rt-message" aria-live="polite">Press Start. When this box lights up, click it or press Space as fast as you can.</span>
       </div>
       <button id="rt-start" class="btn" disabled>Start (10 trials)</button>
 
-      <div id="rt-result" class="rt-result" hidden></div>
+      <p id="rt-result" class="rt-result" aria-live="polite" hidden></p>
     </div>
   </div>
 </section>
 
 <section class="section">
   <div class="grid">
-    <div class="label"><span class="idx">02</span>Builder notes</div>
+    <div class="label"><span class="idx">02</span>How to use it</div>
     <div class="body">
-      <div class="todo-box">
-        <h2 class="h2" style="margin-bottom:12px">Builder notes (task A-1)</h2>
-        <p>This page is a frame only. The spec is in <code>docs/TEAM_GUIDE.md → A-1</code> and the TODOs in
-          <code>app/static/js/attention.js</code>. The API endpoint <code>POST /api/attention</code> already works.</p>
-      </div>
+      <p style="max-width:62ch">The wait changes from trial to trial so the signal is not predictable. A response before the signal,
+        or within 100 ms of it, restarts that trial. A missed signal is recorded after 1.5 seconds. This is context for a human reviewer,
+        not a medical assessment.</p>
     </div>
   </div>
 </section>
