@@ -50,10 +50,13 @@ def test_no_unfinished_todo_text_on_finished_pages(client, path):
     assert "TODO" not in text_of(client.get(path).data.decode())
 
 
-@pytest.mark.xfail(reason="R-1 (privacy page) and A-1 (attention page) are still being built; see docs/NEXT_STEPS.md", strict=False)
-@pytest.mark.parametrize("path", ["/about", "/attention"])
-def test_no_unfinished_todo_text_on_pages_still_being_built(client, path):
-    assert "TODO" not in text_of(client.get(path).data.decode())
+@pytest.mark.xfail(reason="A-1 (attention page) is still being built; see docs/NEXT_STEPS.md", strict=False)
+def test_no_unfinished_todo_text_on_attention_page_still_being_built(client):
+    assert "TODO" not in text_of(client.get("/attention").data.decode())
+
+
+def test_privacy_page_has_no_unfinished_todo_text(client):
+    assert "TODO" not in text_of(client.get("/about").data.decode())
 
 
 @pytest.mark.xfail(reason="L-1 (mission_advisory) is being implemented by the team lead", strict=False)
