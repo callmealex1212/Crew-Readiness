@@ -5,6 +5,26 @@
 > licence. Until the terms are confirmed, the raw files stay out of this repository, NASA and the DOI are credited wherever a number
 > appears, and all results live in one file, `app/nasa_results.json`: delete it and the Evidence page section disappears.
 
+## Paste-ready answer (for the "NASA Data" field)
+
+We used NASA Life Sciences Data Archive data as a core part of our evidence: *Neurocognitive Assessment (WinSCAT) (Flight Analog)*,
+UTMB bed-rest Campaign 3, DOI 10.83263/sbne-th55
+(https://nlsp.nasa.gov/explore/data/details/80ee3231-7c42-5be4-b6c2-b8c788feeb50?dataType=EXPERIMENTS). Healthy volunteers in 90 days
+of head-down-tilt bed rest, a ground analog of spaceflight, took the WinSCAT test battery (the same subtests as on the ISS) about 12
+times each. Our product compares each person with their own usual pattern instead of one threshold for everyone; this dataset lets us
+test that idea on real repeated measures from a NASA study. On 24 people, most of the variation in WinSCAT response times was between
+people rather than within one person (an intraclass correlation of 65 % to 87 % across four measures), which is why a personal
+baseline is the right frame. At the same 1-in-20 alert budget, judged on people the cutoff was not fitted on, the own-baseline rule
+kept its budget before bed rest (5.1 %) and flagged none of the bed-rest sessions, consistent with the original study's finding of no
+consistent decrement. This checks our method on NASA data; it is not validation of the product and says nothing about health. Results
+are produced by `ml/nasa_eval.py` and shown on our Evidence page with every limit. Terms of use are being confirmed with the NASA Life
+Sciences Portal; the raw files are not redistributed.
+
+Other NASA resources: the "Man and Machine" photograph (Image Credit: NASA, https://www.nasa.gov/image-article/man-machine/), whose
+spacesuit glove appears on our landing page; and, as background only, NASA's Reaction Self Test record (NTRS 20090029851,
+https://ntrs.nasa.gov/citations/20090029851) and the Human Research Program Behavioral Health evidence report (NTRS 20250001454,
+https://ntrs.nasa.gov/citations/20250001454). No NASA logo is used and no endorsement is implied.
+
 ## The dataset
 - **What:** NASA Life Sciences Data Archive, *Neurocognitive Assessment (WinSCAT) (Cognitive Assessment Tool for Windows) (Flight
   Analog)*, UTMB bed-rest Campaign 3. Healthy volunteers in 90 days of head-down-tilt bed rest (a ground analog of spaceflight)

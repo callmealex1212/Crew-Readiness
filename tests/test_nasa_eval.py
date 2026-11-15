@@ -136,3 +136,15 @@ def test_every_number_in_nasa_data_md_comes_from_the_results_file():
     a = d["any_of_five"]
     per = [m["flag_rate"] for m in a["per_measure"]]
     assert f"**{pct(a['flag_rate'])}**" in doc and f"{pct(min(per))} to {pct(max(per))} for one measure" in doc
+
+
+@pytest.mark.skipif(not SHIPPED.exists(), reason="no NASA results file (removed until the terms are confirmed)")
+def test_the_paste_ready_nasa_answer_matches_the_results_file():
+    d = json.loads(SHIPPED.read_text(encoding="utf-8"))
+    doc = re.sub(r"\s+", " ", (ROOT / "docs" / "NASA_DATA.md").read_text(encoding="utf-8"))
+    iccs = [m["icc"] for m in d["icc"]]
+    r = d["rules"]
+    assert f"On {d['people']} people" in doc
+    assert f"an intraclass correlation of {min(iccs) * 100:.0f} % to {max(iccs) * 100:.0f} % across {len(iccs)} measures" in doc
+    assert f"kept its budget before bed rest ({r['pre_bed_rest']['own_baseline']['false_alert_rate'] * 100:.1f} %)" in doc
+    assert r["during_bed_rest"]["own_baseline"]["flag_rate"] == 0 and "flagged none of the bed-rest sessions" in doc
