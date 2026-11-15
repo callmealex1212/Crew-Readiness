@@ -60,11 +60,11 @@ def deviation(value: float, median: float, spread: float, direction: int) -> flo
     return min(max(0.0, direction * (value - median) / spread), CAP)
 
 
-def main(folder: Path) -> int:
-    people = load(folder)
-    used, flags, scored, per_phase = 0, {m: 0 for m in MEASURES}, 0, {}
-    any_flag = 0
-    for pid, rows in people.items():
+def any_of_five(people: dict[str, list[dict]]) -> dict:
+    """Per person, baseline = own pre-bed-rest sessions (run 1 dropped as practice); every later session is checked against it.
+    Returns counts only: people used, sessions scored, sessions flagged per measure and on any measure, and per phase."""
+    used, flags, scored, per_phase, any_flag = 0, {m: 0 for m in MEASURES}, 0, {}, 0
+    for rows in people.values():
         pre = [r for r in rows if r.get("Test_Phase") == "PRE_TEST" and r["_run"] != 1]   # run 1 = first exposure (practice)
         later = [r for r in rows if r.get("Test_Phase") in ("IN_TEST", "POST_TEST")]
         if len(pre) < MIN_BASELINE_SESSIONS or not later:
@@ -77,7 +77,6 @@ def main(folder: Path) -> int:
             base[m] = (med, MAD_TO_SD * float(np.median(np.abs(v - med))))
         for r in later:
             scored += 1
-            phase = r["Test_Phase"]
             hit = False
             for m, direction in MEASURES.items():
                 med, spread = base[m]
@@ -85,18 +84,24 @@ def main(folder: Path) -> int:
                     flags[m] += 1
                     hit = True
             any_flag += hit
-            p = per_phase.setdefault(phase, [0, 0])
+            p = per_phase.setdefault(r["Test_Phase"], [0, 0])
             p[0] += 1
             p[1] += hit
-    print(f"people with >= {MIN_BASELINE_SESSIONS} baseline sessions and later sessions: {used} (of {len(people)} files)")
+    return {"people": used, "files": len(people), "scored": scored, "flags": flags, "any": any_flag, "per_phase": per_phase}
+
+
+def main(folder: Path) -> int:
+    r = any_of_five(load(folder))
+    scored = r["scored"]
+    print(f"people with >= {MIN_BASELINE_SESSIONS} baseline sessions and later sessions: {r['people']} (of {r['files']} files)")
     print(f"later sessions scored: {scored}")
     if not scored:
         print("nothing to score: no person has enough baseline sessions and later sessions in this folder")
         return 1
     for m in MEASURES:
-        print(f"  flagged on {m:6s}: {flags[m]:3d} / {scored}  ({flags[m] / scored:.0%})")
-    print(f"  flagged on at least one of the {len(MEASURES)} measures: {any_flag} / {scored}  ({any_flag / scored:.0%})")
-    for phase, (n, k) in sorted(per_phase.items()):
+        print(f"  flagged on {m:6s}: {r['flags'][m]:3d} / {scored}  ({r['flags'][m] / scored:.0%})")
+    print(f"  flagged on at least one of the {len(MEASURES)} measures: {r['any']} / {scored}  ({r['any'] / scored:.0%})")
+    for phase, (n, k) in sorted(r["per_phase"].items()):
         print(f"  {phase}: {k} / {n} sessions flagged on at least one measure")
     return 0
 
