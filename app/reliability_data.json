@@ -1,0 +1,90 @@
+{
+ "generated_by": "python -m ml.export_reliability",
+ "quick": false,
+ "generated_at": "2026-11-14T19:20:59Z",
+ "machine": {
+  "platform": "Linux-6.18.44-fc-v470-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "python": "3.13.18",
+  "cpus": 4
+ },
+ "fault_injection": {
+  "payloads": 1000,
+  "seed": 20261115,
+  "crashes": 0,
+  "crash_examples": [],
+  "status_counts": {
+   "201": 20,
+   "400": 774,
+   "404": 206
+  },
+  "by_kind": {
+   "/api/attention bad_json": 69,
+   "/api/attention extra_field": 76,
+   "/api/attention huge_string": 87,
+   "/api/attention missing_field": 65,
+   "/api/attention not_object": 59,
+   "/api/attention typed_text": 75,
+   "/api/attention wrong_value": 69,
+   "/api/sessions bad_json": 33,
+   "/api/sessions bad_profile": 45,
+   "/api/sessions bad_task": 42,
+   "/api/sessions extra_field": 50,
+   "/api/sessions extra_top": 41,
+   "/api/sessions huge_string": 55,
+   "/api/sessions missing_field": 49,
+   "/api/sessions nested": 36,
+   "/api/sessions not_object": 58,
+   "/api/sessions typed_text": 45,
+   "/api/sessions wrong_value": 46
+  },
+  "rows_added": {
+   "sessions": 2,
+   "attention_results": 18
+  }
+ },
+ "fault_injection_extra_seeds": {
+  "seeds": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "payloads": 5000,
+  "crashes": 1,
+  "crash_examples": [
+   {
+    "endpoint": "/api/attention",
+    "kind": "wrong_value",
+    "result": "exception UnicodeEncodeError",
+    "seed": 1
+   }
+  ]
+ },
+ "soak": {
+  "people": 6,
+  "days": 700,
+  "sessions_per_day": 3,
+  "sessions_stored": 12600,
+  "seed": 7,
+  "scoring_ms": {
+   "median": 115.19,
+   "p95": 262.81,
+   "max": 422.81,
+   "calls": 12600
+  },
+  "scoring_ms_first_100_median": 0.62,
+  "scoring_ms_last_100_median": 271.16,
+  "database_bytes": 2076672,
+  "wall_seconds": 1573.4,
+  "peak_memory_mb": 73.3
+ },
+ "clock_jump": {
+  "sessions": 40,
+  "jump": "from session 26 on, times are 30 days EARLIER than the session before",
+  "crashes": 0,
+  "same_answers_as_forward_clock": true
+ },
+ "limits": "Run once on a general-purpose computer (see 'machine'), on simulated data. Not flight hardware, not radiation-tested, no failing disk or full storage, no concurrent users, no real crew data. Timings depend on the machine."
+}
