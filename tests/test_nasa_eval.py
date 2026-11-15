@@ -148,3 +148,49 @@ def test_the_paste_ready_nasa_answer_matches_the_results_file():
     assert f"an intraclass correlation of {min(iccs) * 100:.0f} % to {max(iccs) * 100:.0f} % across {dict([(4, 'four')]).get(len(iccs), len(iccs))} measures" in doc
     assert f"kept its budget before bed rest ({r['pre_bed_rest']['own_baseline']['false_alert_rate'] * 100:.1f} %)" in doc
     assert r["during_bed_rest"]["own_baseline"]["flag_rate"] == 0 and "flagged none of the bed-rest sessions" in doc
+
+
+# ---- task N4: docs/SUBMISSION.md copies its blocks from the source docs, and its numbers come from result files ----
+SUB = (ROOT / "docs" / "SUBMISSION.md").read_text(encoding="utf-8")
+
+
+def _section(text: str, heading: str) -> str:
+    """The body under a '## heading' line, up to the next '## ' heading."""
+    m = re.search(r"^## " + re.escape(heading) + r"[^\n]*\n(.*?)(?=^## |\Z)", text, re.S | re.M)
+    assert m, heading
+    return m.group(1).strip()
+
+
+@pytest.mark.parametrize("field, source", [
+    ("Use of Super Intelligence (SI)", "AI_USE.md"),
+    ("NASA Data", "NASA_DATA.md"),
+    ("Space Agency Partner Data and Other References", "REFERENCES.md"),
+])
+def test_submission_fields_are_pasted_from_their_source_docs(field, source):
+    src = (ROOT / "docs" / source).read_text(encoding="utf-8")
+    assert _section(SUB, field) == _section(src, "Paste-ready answer"), f"{field} differs from the paste-ready block in docs/{source}"
+
+
+def test_only_the_two_agreed_placeholders_remain():
+    assert set(re.findall(r"\[[A-Z][A-Z ]{3,}[^\]]*\]", SUB)) == {"[TEAM NAME]", "[EXACT CHALLENGE TITLE FROM THE NASA SPACE APPS LIST]"}
+
+
+def test_summary_is_within_the_suggested_length():
+    assert 50 <= len(_section(SUB, "High-Level Project Summary").split()) <= 200
+
+
+def test_baseline_poisoning_numbers_match_ml_results():
+    ml = (ROOT / "docs" / "ML_RESULTS.md").read_text(encoding="utf-8")
+    keep = re.search(r"\| 20 % \| keep all \(today\) \| ([\d.]+) \|.*\| \*\*([\d.]+)\*\* \|", ml)
+    excl = re.search(r"\| 20 % \| exclude flagged.*\| \*\*([\d.]+)\*\* \|", ml)
+    assert f"from {keep.group(1)} to {keep.group(2)} by the fifteenth" in SUB and f"held it at {excl.group(1)}" in SUB
+
+
+@pytest.mark.skipif(not SHIPPED.exists(), reason="no NASA results file (removed until the terms are confirmed)")
+def test_nasa_numbers_in_the_submission_match_the_results_file():
+    d = json.loads(SHIPPED.read_text(encoding="utf-8"))
+    iccs = [m["icc"] for m in d["icc"]]
+    text = re.sub(r"\s+", " ", SUB)
+    assert f"NASA bed-rest data ({d['people']} people" in text
+    assert f"an intraclass correlation of {min(iccs) * 100:.0f} % to {max(iccs) * 100:.0f} %)" in text
+    assert f"kept its budget before bed rest ({d['rules']['pre_bed_rest']['own_baseline']['false_alert_rate'] * 100:.1f} %)" in text
