@@ -15,7 +15,7 @@ import urllib.error
 import urllib.request
 
 BASE = (sys.argv[1] if len(sys.argv) > 1 else "http://127.0.0.1:5050").rstrip("/")
-PAGES = ["/", "/me", "/dashboard", "/monitor", "/attention", "/mission", "/brief", "/replay", "/evidence", "/about"]
+PAGES = ["/", "/me", "/dashboard", "/monitor", "/attention", "/mission", "/brief", "/replay", "/evidence", "/about", "/status"]
 BANNED = ["detects fatigue", "% accurate", "nasa-approved and", "used by astronauts", "flight-proven", "tested in space"]
 DENIES = re.compile(r"\bnot\b|\bno\b|\bnever\b|\bnothing\b|\bnor\b|\bwithout\b", re.I)
 fails = []

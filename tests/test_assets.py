@@ -54,4 +54,4 @@ def test_landing_motion_hooks_and_an_accessible_headline(client):
 def test_hero_structure_and_nav(client):
     html = client.get("/").data.decode()
     assert 'class="land-eyebrow"' in html and 'class="btn btn-ghost"' in html     # mono pill eyebrow, ghost secondary button
-    assert 'class="nav-cta' in html and html.index("Monitoring") < html.index("nav-cta")   # links, then the Dashboard pill on the right
+    assert 'class="nav-cta' in html and html.index("My check-in") < html.index("nav-cta")   # links, then the Start check-in pill on the right

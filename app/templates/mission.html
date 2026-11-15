@@ -31,15 +31,26 @@
     <div class="label"><span class="idx">02</span>Decision support</div>
     <div class="body">
       <div id="advisory"></div>
-      <p style="margin-top:20px"><a href="{{ url_for('views.brief') }}">Open the printable brief for the reviewer</a></p>
+      <p style="margin-top:20px"><a href="{{ url_for('views.brief') }}">Open the printable brief for the reviewer</a>
+        <a href="{{ url_for('views.dashboard') }}" style="margin-left:24px">Open the full crew dashboard</a></p>
       <p class="fineprint" style="margin-top:20px">The system suggests; humans decide. It never assigns, clears or grounds anyone.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="watchdog">
+  <div class="grid">
+    <div class="label"><span class="idx">03</span>Check-ins</div>
+    <div class="body">
+      <div id="watchdog-body"><p class="muted">Loading…</p></div>
+      <p class="fineprint" style="margin-top:20px">A check-in is a submitted session. The longest agreed gap is an illustrative assumption, not a rule. Someone missing a check-in does not mean anything is wrong: it is a reason for a person to look in. This section never changes the readiness suggestion above.</p>
     </div>
   </div>
 </section>
 
 <section class="section" id="no-ground-link">
   <div class="grid">
-    <div class="label"><span class="idx">03</span>If the ground cannot answer quickly</div>
+    <div class="label"><span class="idx">04</span>If the ground cannot answer quickly</div>
     <div class="body">
       <p class="lede">On a long mission, a message to the ground can take minutes each way and some hours have no link at all. The crew still has to decide who does a critical task. This is the situation the tool is built around, as a prototype.</p>
       <div class="table-wrap">

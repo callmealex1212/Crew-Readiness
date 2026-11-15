@@ -31,6 +31,13 @@ async function load() {
     ${adv.suggested_actions.length
       ? `<h3 class="cap">Suggested actions</h3><ul class="reasons">${adv.suggested_actions.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`
       : ""}`;
+
+  const w = m.watchdog;
+  $("watchdog-body").innerHTML = `
+    <p><span class="chip chip-${w.level === "OK" ? "green" : "yellow"}">${w.level === "OK" ? "ALL CHECKED IN" : "CHECK-IN OVERDUE"}</span>
+      <span class="muted small">longest agreed gap ${esc(String(w.interval_hours))} hours</span></p>
+    ${w.messages.length ? `<ul class="reasons">${w.messages.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+    ${w.suggested_actions.length ? `<h3 class="cap">Suggested</h3><ul class="reasons">${w.suggested_actions.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}`;
 }
 
 load().catch((err) => {

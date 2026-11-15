@@ -16,6 +16,7 @@ that the frontend (Member 3) and the scoring code (Member 2) both depend on.
 """
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 # A task type is versioned. If the checklist text changes, the typing
@@ -90,9 +91,12 @@ def validate_session_payload(payload: object) -> dict:
     profile_id = payload.get("profile_id")
     if not isinstance(profile_id, str) or not profile_id.strip():
         raise ValidationError("profile_id must be a non-empty string.")
+    # found by fault injection (task R2): a lone surrogate reached SQLite and crashed it; ids are short, printable slugs
+    if len(profile_id) > 200 or not profile_id.isprintable():
+        raise ValidationError("profile_id must be at most 200 printable characters.")
 
     task_type = payload.get("task_type")
-    if task_type not in TASK_TYPES:
+    if not isinstance(task_type, str) or task_type not in TASK_TYPES:   # a list or object here raised TypeError (R2)
         raise ValidationError(f"task_type must be one of {sorted(TASK_TYPES)}.")
 
     features = payload.get("features")
@@ -115,17 +119,20 @@ def validate_session_payload(payload: object) -> dict:
         # bool is a subclass of int in Python — reject it explicitly.
         if isinstance(value, bool) or not isinstance(value, (int, float)):
             raise ValidationError(f"{spec.name} must be a number.")
+        # found by fault injection (task R2): int(NaN) and int(inf) raised before the range check; check range first
+        if isinstance(value, float) and not math.isfinite(value):
+            raise ValidationError(f"{spec.name} must be a finite number.")
+        if not (spec.min <= value <= spec.max):
+            raise ValidationError(
+                f"{spec.name}={value} is outside the plausible range "
+                f"[{spec.min}, {spec.max}] {spec.unit}."
+            )
         if spec.kind is int:
             if value != int(value):
                 raise ValidationError(f"{spec.name} must be a whole number.")
             value = int(value)
         else:
             value = float(value)
-        if not (spec.min <= value <= spec.max):
-            raise ValidationError(
-                f"{spec.name}={value} is outside the plausible range "
-                f"[{spec.min}, {spec.max}] {spec.unit}."
-            )
         clean[spec.name] = value
 
     return {"profile_id": profile_id.strip(), "task_type": task_type, "features": clean}

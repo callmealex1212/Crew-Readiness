@@ -134,7 +134,18 @@ All JSON. Errors: `{"error": "<code>", "message": "<human text>"}`.
 | GET | `/api/readiness` | latest readiness for every profile (no trend) | `200 {crew: [ProfileReadiness]}` |
 | GET | `/api/readiness/<profile_id>` | includes `trend` (last 14 sessions, oldest first; see **Trend point** below) | `200 ProfileReadiness` |
 | POST | `/api/attention` | `{profile_id, session_id?, trials, median_rt_ms, premature_count, miss_count}` | `201 {id}` |
-| GET | `/api/mission` | scenario + assignments joined with readiness + `advisory` | `200` |
+| GET | `/api/mission` | scenario + assignments joined with readiness + `advisory` + `watchdog` | `200` |
+| GET | `/api/selftest` | health of the monitor (task R1): database write/read/rollback, scoring on a fixed hand-worked fixture (1.2 YELLOW), clock sanity, no page loads from another host, app version. Reads nothing about any person; its test row is rolled back | `200 {ok, checked_at, version, checks: [{id, name, ok, detail}], does_not_show}` (always 200; `ok` carries the result) |
+
+`/api/mission` also returns each assignment's `last_check_in` (ISO-8601 UTC of its latest submitted session, or `null`) and a `watchdog`
+(plan v3, H2; docs/PLAN.md D-9), separate from `advisory` and never changing it:
+```json
+{"interval_hours": 36, "level": "OK" | "OVERDUE",
+ "overdue": [{"role": "Comms and log", "display_name": "Tomas Ibarra", "hours_since": 74}],
+ "clock_check": [{"role": "...", "display_name": "...", "reason": "future" | "unreadable"}],
+ "messages": ["..."], "suggested_actions": ["..."]}
+```
+`hours_since` is `null` when the person has never checked in. A time in the future is a `clock_check`, never overdue.
 
 `ProfileReadiness`:
 ```json
@@ -157,6 +168,14 @@ stacked-sessions art draws exactly these numbers and nothing else (see `docs/DES
 
 ---
 
+### Backup file (task R3)
+`flask --app run export-backup <file>` writes `{"sha256": <hex>, "payload": {"format": "crew-readiness-backup", "format_version": 1,
+"tables": {"profiles": [...], "sessions": [...], "attention_results": [...]}}}`. The rows hold exactly the stored columns (`app/backup.py`
+`SCHEMA`, checked against the live schema by a test); the checksum is SHA-256 of the canonical JSON of `payload`.
+`flask --app run import-backup <file>` restores into an **empty** database only (`flask --app run reset-empty` first), all or nothing, and
+refuses: a checksum mismatch; any unknown top-level field, table or column; a value of the wrong type or outside the feature contract;
+NaN or infinity; free text in `quality_notes` other than the two notes the app writes. Not encrypted; the checksum catches damage, not forgery.
+
 ## 6. Versioning rules
 
 * Changing checklist text, item count, or the pause threshold → **new task_type** (`docking_checklist_v2`). Old baselines must not mix with new sessions.
@@ -172,3 +191,13 @@ stacked-sessions art draws exactly these numbers and nothing else (see `docs/DES
   `sessions.accepted_at` (UTC timestamp; no identity, the prototype has no accounts), count toward the baseline, and the baseline
   **restarts from the first accepted session** (fewer than 5 means CALIBRATING). 200 returns `accepted_session_ids` plus the readiness
   payload; 404 unknown profile; 409 nothing waiting for review.
+
+
+## Responsiveness (plan v3, H1)
+`GET /api/readiness/<id>` has `responsiveness`, and `POST /api/attention` returns `{id, responsiveness}`; `/api/mission` assignments carry it too.
+```json
+{"status": "SCORED" | "CALIBRATING" | "NO_RESPONSE" | "NONE", "level": "USUAL" | "SLOWER" | "MUCH_SLOWER" | null,
+ "summary": "Your response time today (328 ms) is slower than your own usual (about 277 ms).", "reasons": ["..."],
+ "baseline": {"n": 8, "median_rt_ms": 277.0, "spread_ms": 17.0}, "deviation": 3.1, "today": {"median_rt_ms": 328.0, "miss_count": 1, "trials": 10, "created_at": "...Z"}, "n_checks": 9}
+```
+Compared only with the same person's earlier checks (at least 5 valid ones, otherwise `CALIBRATING`). Cut-offs are illustrative and not validated; it never changes `readiness.band`.

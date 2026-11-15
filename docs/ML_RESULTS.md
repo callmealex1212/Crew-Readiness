@@ -151,3 +151,18 @@ a 40 % permanent slowdown from session 16; a person accepts it after 7 sessions;
 | Current scoring | 100 % (100 to 100) | 11 % (9 to 13) | 60 % (57 to 62) |
 
 Reading: both flag the change, as they should. After a person accepts it, the current scoring raises fewer repeated alerts; the later real slowdown is flagged somewhat more often. The current scoring only stops alerting because a **human** accepted the change. Limits: the size, timing and acceptance delay are our assumptions, and the simulator is ours. Real gloves or devices may change more than speed (see `docs/DEMO.md`, "what we would do next": a per-context baseline needs a new, non-aggregate field, which is ruled out by the privacy rule until the lead decides).
+
+
+## Responsiveness against your own earlier checks (plan v3, H1)
+`python -m ml.responsiveness_check` (**synthetic, illustrative assumptions**: usual response 230 to 350 ms, check-to-check variation 7 %, which is our guess, not a measurement).
+```
+2000 simulated people, 8 earlier checks each, per-check variation 7% (assumed)
+normal check flagged (false alerts): 3.2%
+10% slower flagged: 31.8%
+20% slower flagged: 72.9%
+30% slower flagged: 93.3%
+```
+Reading: with eight earlier checks the rule raises about 3 in 100 false alerts on a normal check and finds most 20 to 30 % slowdowns, but only about a third of 10 % ones. It uses the same
+own-baseline idea as typing, flags only SLOWER than usual (2 robust SD) or MUCH SLOWER (3.5), and has a spread floor (6 % of the median) so a very steady person is not over-flagged.
+**Not validated on real people**: the real variation of a person's reaction checks is exactly the unknown (our two pilot volunteers did not do reaction checks). It is context for a human
+and never changes the typing band.

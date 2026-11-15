@@ -10,9 +10,12 @@ from flask import Flask
 from . import store
 from .db import get_db, init_db
 from .seed import seed_demo
+from .selftest import run_selftest
 
 
 def init_app(app: Flask) -> None:
+    from .backup import register_cli as register_backup_cli   # export-backup / import-backup (task R3)
+    register_backup_cli(app)
 
     @app.cli.command("reset-demo")
     @click.confirmation_option(prompt="This deletes ALL sessions. Continue?")
@@ -39,3 +42,14 @@ def init_app(app: Flask) -> None:
         store.insert_profile(db, profile_id, display_name, mission_role, kind="team_test")
         db.commit()
         click.echo(f"Added team_test profile {profile_id!r}. Use a pseudonym, never a real name.")
+
+    @app.cli.command("selftest")
+    def selftest():
+        """Health of the monitor: check the database, scoring, clock, network rule and version. Exit 1 if any fails."""
+        result = run_selftest()
+        for c in result["checks"]:
+            click.echo(f"{'PASS' if c['ok'] else 'FAIL'}  {c['name']}: {c['detail']}")
+        click.echo("")
+        click.echo("All checks passed." if result["ok"] else "At least one check FAILED.")
+        click.echo(f"What this does not show: {result['does_not_show']}")
+        raise SystemExit(0 if result["ok"] else 1)

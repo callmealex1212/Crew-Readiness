@@ -13,6 +13,7 @@ MISSION = {
     "name": "Gateway docking — simulated scenario",
     "critical_operation": "Manual approach and docking",
     "t_minus_hours": 6,
+    "check_in_interval_hours": 36,      # ASSUMPTION (illustrative): the agreed longest gap between check-ins, docs/PLAN.md D-9
     "assignments": [
         {"role": "Primary pilot",   "profile_id": "plt-okafor", "critical": True},
         {"role": "Backup pilot",    "profile_id": "cdr-vega",   "critical": True},
@@ -109,3 +110,50 @@ def mission_advisory(assignments: list[dict]) -> dict:
         messages.append("Every critical role is within its own usual range." if critical else "No critical roles are assigned.")
 
     return {"level": level, "messages": messages, "suggested_actions": actions}
+
+
+def _hours_since(last_iso: str | None, now) -> float | None:
+    """Hours from an ISO-8601 UTC timestamp to `now`; None if there is none or it cannot be read."""
+    from datetime import datetime, timezone
+    if not last_iso:
+        return None
+    try:
+        last = datetime.fromisoformat(last_iso.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if last.tzinfo is None:
+        last = last.replace(tzinfo=timezone.utc)
+    return (now - last).total_seconds() / 3600
+
+
+def check_in_watchdog(assignments: list[dict], interval_hours: float, now) -> dict:
+    """Missed check-in watchdog (plan v3, H2). Separate from the readiness advisory, which it never changes.
+
+    Input: one dict per assignment with role, display_name and `last_check_in` (ISO-8601 UTC string or None).
+    A check-in is a submitted session. Someone whose last check-in is older than the agreed interval, or who has none, is
+    OVERDUE. A timestamp in the future means the clock is wrong: that person is reported as `clock_check`, never as overdue,
+    and never with negative hours. It says nothing is necessarily wrong with anyone; it asks someone to look in.
+    """
+    overdue, clock_check = [], []
+    for a in assignments:
+        h = _hours_since(a.get("last_check_in"), now)
+        if a.get("last_check_in") and h is None:
+            clock_check.append({"role": a["role"], "display_name": a["display_name"], "reason": "unreadable"})
+        elif h is not None and h < -0.05:                      # more than a few minutes in the future
+            clock_check.append({"role": a["role"], "display_name": a["display_name"], "reason": "future"})
+        elif h is None:
+            overdue.append({"role": a["role"], "display_name": a["display_name"], "hours_since": None})
+        elif h > interval_hours:
+            overdue.append({"role": a["role"], "display_name": a["display_name"], "hours_since": int(h)})
+    messages, actions = [], []
+    for o in overdue:
+        who = f"{o['display_name']} ({o['role']})"
+        if o["hours_since"] is None:
+            messages.append(f"No check-in recorded yet for {who}.")
+        else:
+            messages.append(f"No check-in from {who} for {o['hours_since']} hours; the agreed longest gap is {int(interval_hours)}.")
+        actions.append(f"Suggest looking in on {who} in person, or asking them to check in. This does not mean anything is wrong.")
+    for c in clock_check:
+        messages.append(f"The recorded time for {c['display_name']} ({c['role']}) looks wrong (it is in the future or unreadable), so it is not used. Check the device clock.")
+    return {"interval_hours": int(interval_hours), "level": "OVERDUE" if overdue else "OK",
+            "overdue": overdue, "clock_check": clock_check, "messages": messages, "suggested_actions": actions}

@@ -86,6 +86,8 @@ def seed_demo(db) -> None:
         for i in range(n):
             # one session per simulated day, most recent last
             created = now - timedelta(days=n - i, hours=int(rng.integers(0, 4)))
+            if profile_id == "ms-ibarra":
+                created -= timedelta(days=2)      # illustrative: this crew member has not checked in for about three days (watchdog demo)
             features = _synth_features(rng, STYLES[profile_id])
             quality, notes = assess_quality(features)
             store.insert_session(
@@ -107,4 +109,20 @@ def seed_demo(db) -> None:
         source="synthetic", data_quality=quality, quality_notes="; ".join(notes) or None,
         created_at=_iso(now - timedelta(hours=1)),
     )
+
+    # Reaction-check history, so Responsiveness has an own-baseline to compare with. ILLUSTRATIVE and synthetic, like everything
+    # here. The primary pilot's latest check is ~15 % slower than their own usual, matching their seeded typing story.
+    rrng = np.random.default_rng(SEED + 1)             # its own generator: the draws above are untouched
+    usual_rt = {"plt-okafor": 285.0, "cdr-vega": 265.0, "fe-sato": 310.0, "ms-ibarra": 295.0}
+    n_checks = {"plt-okafor": 8, "cdr-vega": 8, "fe-sato": 8, "ms-ibarra": 3}
+    for profile_id, base in usual_rt.items():
+        n = n_checks[profile_id]
+        for i in range(n):
+            store.insert_attention_result(
+                db, profile_id=profile_id, session_id=None, trials=10,
+                median_rt_ms=round(float(rrng.normal(base, 0.05 * base)), 1), premature_count=int(rrng.integers(0, 2)),
+                miss_count=0, created_at=_iso(now - timedelta(days=n - i + 1, hours=int(rrng.integers(0, 3)))))
+    store.insert_attention_result(
+        db, profile_id="plt-okafor", session_id=None, trials=10, median_rt_ms=round(usual_rt["plt-okafor"] * 1.15, 1),
+        premature_count=0, miss_count=1, created_at=_iso(now - timedelta(hours=1)))
     db.commit()

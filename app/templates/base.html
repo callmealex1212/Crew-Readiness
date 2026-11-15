@@ -29,15 +29,12 @@
           </a>
         </div>
         <nav class="nav-links" aria-label="Primary">
-          <a href="{{ url_for('views.me') }}" class="{{ 'active' if active == 'me' }}">My status</a>
-          <a href="{{ url_for('views.monitor') }}" class="{{ 'active' if active == 'monitor' }}">Monitoring</a>
-          <a href="{{ url_for('views.attention') }}" class="{{ 'active' if active == 'attention' }}">Attention</a>
-          <a href="{{ url_for('views.mission') }}" class="{{ 'active' if active == 'mission' }}">Mission</a>
-          <a href="{{ url_for('views.replay') }}" class="{{ 'active' if active == 'replay' }}">Replay</a>
-          <a href="{{ url_for('views.evidence') }}" class="{{ 'active' if active == 'evidence' }}">Evidence</a>
+          <a href="{{ url_for('views.me') }}" class="{{ 'active' if active in ('me', 'monitor', 'attention') }}">My check-in</a>
+          <a href="{{ url_for('views.mission') }}" class="{{ 'active' if active in ('mission', 'dashboard') }}">Reviewer</a>
+          <a href="{{ url_for('views.evidence') }}" class="{{ 'active' if active in ('evidence', 'replay') }}">Evidence</a>
           <a href="{{ url_for('views.about') }}" class="{{ 'active' if active == 'about' }}">Privacy &amp; limits</a>
         </nav>
-        <div class="nav-cta-wrap"><a class="nav-cta{{ ' active' if active == 'dashboard' }}" href="{{ url_for('views.dashboard') }}">Dashboard</a></div>
+        <div class="nav-cta-wrap"><a class="nav-cta" href="{{ url_for('views.monitor') }}">Start check-in</a></div>
       </div>
     </div>
   </header>

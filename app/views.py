@@ -52,12 +52,19 @@ def about():
     return render_template("about.html", active="about")
 
 
+@bp.get("/status")
+def status():
+    """Health of the monitor (task R1). Linked from About only, not from the top navigation."""
+    return render_template("status.html", active="about")
+
+
 @bp.get("/replay")
 def replay():
     return render_template("replay.html", active="replay")
 
 
 RESULTS_FILE = Path(__file__).with_name("results_data.json")
+RELIABILITY_FILE = Path(__file__).with_name("reliability_data.json")   # written by `python -m ml.export_reliability` (task R2)
 PILOT_FILE = Path(__file__).resolve().parents[1] / "docs" / "pilot" / "pilot_report.json"   # written by `python -m ml.pilot_report`; absent until the pilot is run
 
 
@@ -72,4 +79,8 @@ def evidence():
         pilot = json.loads(PILOT_FILE.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         pilot = None                    # no pilot yet: the page says nothing about one
-    return render_template("evidence.html", active="evidence", data=data, pilot=pilot)
+    try:
+        reliability = json.loads(RELIABILITY_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        reliability = None              # no run yet: the page says nothing about reliability
+    return render_template("evidence.html", active="evidence", data=data, pilot=pilot, reliability=reliability)

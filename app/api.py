@@ -4,15 +4,18 @@ The pages (views.py) are thin shells; they fetch everything from here.
 """
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 from flask import Blueprint, current_app, jsonify, request
 from werkzeug.exceptions import HTTPException
 
-from . import store
+from . import responsiveness, store
 from .db import get_db
 from .features import ValidationError, assess_quality, validate_session_payload
-from .mission import MISSION, mission_advisory
+from .mission import MISSION, check_in_watchdog, mission_advisory
 from .readiness import accept_new_normal, readiness_for_all, readiness_for_profile
-from .tasks import TASKS
+from .selftest import run_selftest
+from .tasks import DEFAULT_TASK_TYPE, TASKS
 
 bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -37,6 +40,12 @@ def health():
     db.execute("SELECT 1").fetchone()
     return jsonify(status="ok", version=current_app.config["APP_VERSION"],
                    profiles=len(store.list_profiles(db)))
+
+
+@bp.get("/selftest")
+def selftest():
+    """Health of the monitor (task R1): each check with pass/fail and its reason. Always 200; `ok` says the result."""
+    return jsonify(run_selftest())
 
 
 @bp.get("/tasks/<task_type>")
@@ -161,7 +170,7 @@ def create_attention_result():
         premature_count=premature, miss_count=misses,
     )
     db.commit()
-    return jsonify(id=result_id), 201
+    return jsonify(id=result_id, responsiveness=responsiveness.assess(store.list_attention_results(db, profile["id"]))), 201
 
 
 @bp.get("/mission")
@@ -173,7 +182,10 @@ def mission():
         if profile is None:
             continue
         r = readiness_for_profile(db, profile, with_trend=False)["readiness"]
+        history = store.list_sessions(db, profile["id"], DEFAULT_TASK_TYPE, limit=1)
         assignments.append({**a, "display_name": profile["display_name"],
+                            "last_check_in": history[-1]["created_at"] if history else None,
+                            "responsiveness": responsiveness.assess(store.list_attention_results(db, profile["id"])),
                             "mission_role": profile["mission_role"],
                             "status": r["status"], "band": r["band"],
                             "confidence": r["confidence"], "reasons": r["reasons"]})
@@ -183,4 +195,5 @@ def mission():
         t_minus_hours=MISSION["t_minus_hours"],
         assignments=assignments,
         advisory=mission_advisory(assignments),
+        watchdog=check_in_watchdog(assignments, MISSION["check_in_interval_hours"], datetime.now(timezone.utc)),
     )
