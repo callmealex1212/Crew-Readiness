@@ -145,6 +145,6 @@ def test_the_paste_ready_nasa_answer_matches_the_results_file():
     iccs = [m["icc"] for m in d["icc"]]
     r = d["rules"]
     assert f"On {d['people']} people" in doc
-    assert f"an intraclass correlation of {min(iccs) * 100:.0f} % to {max(iccs) * 100:.0f} % across {len(iccs)} measures" in doc
+    assert f"an intraclass correlation of {min(iccs) * 100:.0f} % to {max(iccs) * 100:.0f} % across {dict([(4, 'four')]).get(len(iccs), len(iccs))} measures" in doc
     assert f"kept its budget before bed rest ({r['pre_bed_rest']['own_baseline']['false_alert_rate'] * 100:.1f} %)" in doc
     assert r["during_bed_rest"]["own_baseline"]["flag_rate"] == 0 and "flagged none of the bed-rest sessions" in doc
