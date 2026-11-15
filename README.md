@@ -2,6 +2,13 @@
 
 **NASA Space Apps 2026.** A privacy-conscious prototype that flags **changes in a crew member's task interaction timing**, compared with **their own** baseline, for **human review** before a critical operation.
 
+> **AI assistance.** Built with AI coding assistants, used as tools. The team lead set the direction (compare each person only
+> with themselves, a human decides, privacy first), made every product and claim decision, and ran the volunteer pilot with a
+> teammate. Claude (by Anthropic, through Claude Code) wrote much of the code, tests and documentation and proposed some features
+> the team lead approved; a second Claude Code session, run by teammate Alex, wrote the pilot tooling, the NASA data search and
+> analysis, the self-test and the backup. No AI-generated image is in the product, and the running app calls no AI service.
+> Full account: [`docs/AI_USE.md`](docs/AI_USE.md).
+
 > **Positioning.** A prototype of on-board decision support for crews doing computer-based procedure work, **tested on simulated data and one very small volunteer check (see `docs/pilot/`)**. It has not been used by or tested with astronauts, and real conditions (tablets, gloves, shared devices, microgravity) are untested.
 
 > ⚠️ **Prototype.** Fictional crew, synthetic demo data, illustrative thresholds. It detects changes in interaction timing; it does **not** detect fatigue, diagnose anything, or clear anyone for duty.
