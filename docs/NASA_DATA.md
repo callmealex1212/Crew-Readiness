@@ -7,7 +7,7 @@
 
 ## Paste-ready answer (for the "NASA Data" field)
 
-We used NASA Life Sciences Data Archive data as a core part of our evidence: *Neurocognitive Assessment (WinSCAT) (Flight Analog)*,
+We used NASA Life Sciences Data Archive data as a core part of our evidence: the WinSCAT test battery (Flight Analog) dataset,
 UTMB bed-rest Campaign 3, DOI 10.83263/sbne-th55
 (https://nlsp.nasa.gov/explore/data/details/80ee3231-7c42-5be4-b6c2-b8c788feeb50?dataType=EXPERIMENTS). Healthy volunteers in 90 days
 of head-down-tilt bed rest, a ground analog of spaceflight, took the WinSCAT test battery (the same subtests as on the ISS) about 12
