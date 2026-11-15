@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import os
 
-from . import store
+from . import responsiveness, store
 from .baseline import EXCLUDE_FROM_BASELINE, compute_baseline, select_baseline_sessions
 from .features import FEATURE_NAMES
 from .scoring import insufficient_data_view, score_session
@@ -94,6 +94,7 @@ def readiness_for_profile(db, profile: dict, task_type: str = DEFAULT_TASK_TYPE,
         "baseline": None,
         "trend": [],
         "attention": store.latest_attention_result(db, profile["id"]),
+        "responsiveness": responsiveness.assess(store.list_attention_results(db, profile["id"])),
         "baseline_review": None,
     }
     if not history:

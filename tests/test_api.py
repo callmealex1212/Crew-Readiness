@@ -21,10 +21,10 @@ def test_landing_and_dashboard_are_distinct_pages(client):
 
 def test_no_page_calls_out_to_the_network(client):
     """Offline demo rule (risk R-6): every script, stylesheet and font is served by us."""
-    import re
-    for path in ["/", "/dashboard", "/monitor", "/attention", "/mission", "/about"]:
+    from app.selftest import external_loads   # one rule, shared with the self-test (task R1)
+    for path in ["/", "/dashboard", "/monitor", "/attention", "/mission", "/about", "/status"]:
         html = client.get(path).data.decode()
-        links_out = re.findall(r'<(?:script|link|img)[^>]+(?:src|href)=["\'](https?://[^"\']+)', html)
+        links_out = external_loads(html)
         assert not links_out, f"{path} loads from the network: {links_out}"
 
 

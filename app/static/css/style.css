@@ -388,3 +388,8 @@ table.evidence td.num { font-size: 15px; }
   .brief-person, .record li { break-inside: avoid; }
   .section { padding-top: 16px; padding-bottom: 16px; }
 }
+
+.land-more { color: var(--muted); font-size: 14px; text-decoration: underline; text-underline-offset: 3px; margin-left: 8px; align-self: center; }
+.land-more:hover { color: var(--ink); }
+.nav-cta { white-space: nowrap; }
+@media (max-width: 520px) { .nav-cta-wrap { display: none; } }   /* the primary action is already the first link and the page's own button on a phone */

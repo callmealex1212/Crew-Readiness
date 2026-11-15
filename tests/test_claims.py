@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-PAGES = ["/", "/me", "/dashboard", "/monitor", "/attention", "/mission", "/brief", "/replay", "/evidence", "/about"]
+PAGES = ["/", "/me", "/dashboard", "/monitor", "/attention", "/mission", "/brief", "/replay", "/evidence", "/about", "/status"]
 TOUCHY = re.compile(r"fatigue|impair|cognitive|illness|unfit|diagnos|fitness for duty", re.I)
 DENIES = re.compile(r"\bnot\b|\bno\b|\bnever\b|\bnothing\b|\bnor\b|\bwithout\b|\bsays nothing\b|\bdoes not\b", re.I)
 BANNED = ("% accurate", "accuracy of", "proven to", "guaranteed", "ai-powered", "clinically proven", "cleared for duty")

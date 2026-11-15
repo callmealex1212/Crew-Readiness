@@ -237,3 +237,11 @@ Each owner prepares a 2-sentence answer **in their own words**, pointing at evid
 - [ ] No unsupported health or NASA-approval claims (V-3 passed)
 - [ ] Fictional crew and illustrative thresholds labelled everywhere
 - [ ] Whole team opened the final submission before **21:30**
+
+
+## D-9: missed check-in watchdog (plan v3, H2) - recorded 2026-11-15, Lead may overrule
+- A check-in is a submitted session (a timestamp we already store); nothing new is collected.
+- The longest agreed gap is `check_in_interval_hours = 36` in `app/mission.py`: an **illustrative assumption**, not a rule.
+- It applies to every assigned role (a missed check-in is a safety matter regardless of role), but it is **separate from the readiness advisory**, which it never changes (D-5: non-critical roles never move the level).
+- No check-in ever recorded counts as overdue. A timestamp in the future, or one that cannot be read, is a clock problem: reported as such, never as overdue, never with negative hours.
+- Wording: it suggests looking in on the person, says nothing is necessarily wrong, and never uses the words unconscious, fatigue, impaired, unfit or diagnosis. It is not a consciousness or health measure.

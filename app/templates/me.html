@@ -7,6 +7,8 @@
     <h1 class="title">Your own status, first.</h1>
     <p class="lede">Compared only with your own usual pattern, and shown to you before anyone else. It says what changed and what you can do. It never guesses the cause, and it never decides.</p>
     <p class="fineprint">If you feel unwell, tell crew medical support directly. This page cannot tell.</p>
+    <p style="margin-top:20px"><a class="btn" href="{{ url_for('views.monitor') }}" id="me-start">Start check-in</a>
+      <a href="{{ url_for('views.attention') }}" id="me-resp-top" style="margin-left:16px">Responsiveness check (about a minute)</a></p>
   </div>
 </section>
 
@@ -40,9 +42,45 @@
     </div>
   </section>
 
+  <section class="section" id="me-responsiveness">
+    <div class="grid">
+      <div class="label"><span class="idx">04</span>Responsiveness</div>
+      <div class="body">
+        <p id="me-resp-sentence" class="advisory" aria-live="polite"></p>
+        <ul id="me-resp-reasons" class="reasons"></ul>
+        <p class="fineprint" id="me-resp-link" style="margin:12px 0 16px"></p>
+        <p class="fineprint">A short reaction check, compared only with your own earlier checks. It is not a test of alertness or health, its cut-offs are illustrative and not validated on real people, and it never changes the status above.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="me-notes">
+    <div class="grid">
+      <div class="label"><span class="idx">05</span>Your private notes</div>
+      <div class="body">
+        <p style="max-width:62ch"><strong>These stay on this device.</strong> They are saved only in this browser, never sent to the app's server, and nobody else can see them unless you choose to share a summary. Optional.</p>
+        <form class="replay-controls" id="notes-form" onsubmit="return false" style="margin-top:12px">
+          <label><span>Hours of sleep last night</span><input type="number" id="notes-sleep" min="0" max="24" step="0.5" inputmode="decimal" placeholder="for example 6.5"></label>
+          <label><span>How I feel right now</span>
+            <select id="notes-feel"><option value="">Not saying</option>
+              <option value="1">1 (very low)</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+              <option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9 (very high)</option></select></label>
+          <button type="button" class="btn btn-ghost" id="notes-save">Save on this device</button>
+        </form>
+        <p class="fineprint" id="notes-status" aria-live="polite"></p>
+        <div class="table-wrap" id="notes-table-wrap" hidden>
+          <table class="evidence"><thead><tr><th>When</th><th>Sleep (hours)</th><th>How I felt (1 to 9)</th></tr></thead><tbody id="notes-rows"></tbody></table>
+        </div>
+        <p style="margin-top:16px"><button type="button" class="btn btn-ghost" id="notes-copy">Copy a summary I can share</button>
+          <button type="button" class="btn btn-ghost" id="notes-clear" style="margin-left:12px">Delete my notes on this device</button></p>
+        <p class="fineprint">The summary is text you choose to paste to your reviewer or crew medical support. It combines what this page shows with your latest note and says it is your own summary. These notes are your own words in numbers: the software does not interpret them, and it does not use them in your status.</p>
+      </div>
+    </div>
+  </section>
+
   <section class="section">
     <div class="grid">
-      <div class="label"><span class="idx">04</span>Your own pattern</div>
+      <div class="label"><span class="idx">06</span>Your own pattern</div>
       <div class="body">
         <figure class="art" style="grid-column: auto" aria-labelledby="me-art-caption">
           <div class="art-stage">
@@ -58,7 +96,7 @@
 
   <section class="section">
     <div class="grid">
-      <div class="label"><span class="idx">05</span>What you can do</div>
+      <div class="label"><span class="idx">07</span>What you can do</div>
       <div class="body">
         <ul id="me-actions" class="reasons"></ul>
         <p class="fineprint" style="margin-top:16px">Timing changes have many ordinary causes: a different keyboard, time of day, sleep, practice. This software cannot tell which one it is, and it says nothing about your health.</p>
@@ -68,7 +106,7 @@
 
   <section class="section">
     <div class="grid">
-      <div class="label"><span class="idx">06</span>Who sees this</div>
+      <div class="label"><span class="idx">08</span>Who sees this</div>
       <div class="body">
         <p style="max-width:62ch">The proposal is that <strong>you see your own numbers first, and sharing them is your choice</strong>. This prototype has no accounts, so anyone who opens it can see every profile, and every profile here is fictional. The page loads nothing from other hosts and reads its data only from this app. On board, the app would run on the crew computer itself, so nothing would need a link to the ground. Details and limits: <a href="{{ url_for('views.about') }}">Privacy &amp; limits</a>.</p>
       </div>
@@ -78,4 +116,5 @@
 {% endblock %}
 {% block scripts %}
 <script type="module" src="{{ url_for('static', filename='js/me.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/notes.js') }}"></script>
 {% endblock %}

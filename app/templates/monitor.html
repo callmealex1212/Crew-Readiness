@@ -3,12 +3,13 @@
 {% block content %}
 <section class="pagehead grid">
   <div class="label">
-    Monitoring
+    Check-in, step 1 of 2
     <div id="monitor-pill" class="monitor-pill" style="margin-top:12px" hidden>Monitoring active · timing only</div>
   </div>
   <div class="body">
     <h1 class="title">{{ task.title }}</h1>
     <p class="lede">Routine work, passively timed. No extra test for the crew.</p>
+    <p class="fineprint"><a href="{{ url_for('views.me') }}">&larr; Back to My check-in</a></p>
   </div>
 </section>
 

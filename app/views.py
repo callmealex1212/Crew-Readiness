@@ -52,6 +52,12 @@ def about():
     return render_template("about.html", active="about")
 
 
+@bp.get("/status")
+def status():
+    """Health of the monitor (task R1). Linked from About only, not from the top navigation."""
+    return render_template("status.html", active="about")
+
+
 @bp.get("/replay")
 def replay():
     return render_template("replay.html", active="replay")

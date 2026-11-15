@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Health of the monitor{% endblock %}
+{% block content %}
+<section class="pagehead grid">
+  <div class="label">Status</div>
+  <div class="body">
+    <h1 class="title">Health of the monitor</h1>
+    <p class="lede">The software checks itself: its database, its scoring, its clock and its no-network rule. Each check says pass or fail, and why.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="grid">
+    <div class="label"><span class="idx">01</span>Self-test</div>
+    <div class="body">
+      <p id="st-summary" class="advisory" aria-live="polite">Running the checks…</p>
+      <ul id="st-checks" class="reasons"></ul>
+      <p id="st-meta" class="fineprint" style="margin-top:16px"></p>
+      <p class="fineprint" style="margin-top:8px">Same checks from a terminal: <code>flask --app run selftest</code> (exits 1 if any check fails).</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="grid">
+    <div class="label"><span class="idx">02</span>What it does not show</div>
+    <div class="body">
+      <p id="st-limits" style="max-width:62ch">It says nothing about any crew member. It does not test the hardware, power or storage medium,
+        behaviour under radiation, or whether scoring is right for real people: the scoring check is one fixed example worked out by hand.
+        "No outside network" means no page or script asks for another host, not that a network is absent.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/status.js') }}"></script>
+{% endblock %}

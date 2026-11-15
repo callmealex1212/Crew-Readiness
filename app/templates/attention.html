@@ -2,11 +2,12 @@
 {% block title %}Attention check{% endblock %}
 {% block content %}
 <section class="pagehead grid">
-  <div class="label">Attention</div>
+  <div class="label">Check-in, step 2 of 2 (optional)</div>
   <div class="body">
     <h1 class="title">Optional attention check</h1>
-    <p class="lede">A short reaction-time task offered after a YELLOW or RED advisory.
+    <p class="lede">A short reaction-time task, optional at any check-in.
       Illustrative only. It adds context for a human reviewer and is not a medical test.</p>
+    <p class="fineprint"><a href="{{ url_for('views.me') }}">&larr; Back to My check-in</a></p>
   </div>
 </section>
 
