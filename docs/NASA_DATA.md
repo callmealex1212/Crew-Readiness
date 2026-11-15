@@ -10,7 +10,7 @@
 We used NASA Life Sciences Data Archive data as a core part of our evidence: the WinSCAT test battery (Flight Analog) dataset,
 UTMB bed-rest Campaign 3, DOI 10.83263/sbne-th55
 (https://nlsp.nasa.gov/explore/data/details/80ee3231-7c42-5be4-b6c2-b8c788feeb50?dataType=EXPERIMENTS). Healthy volunteers in 90 days
-of head-down-tilt bed rest, a ground analog of spaceflight, took the WinSCAT test battery (the same subtests as on the ISS) about 12
+of head-down-tilt bed rest, a ground analog of spaceflight, took the WinSCAT test battery (which the archive describes as the same subtests used on the ISS) about 12
 times each. Our product compares each person with their own usual pattern instead of one threshold for everyone; this dataset lets us
 test that idea on real repeated measures from a NASA study. On 24 people, most of the variation in WinSCAT response times was between
 people rather than within one person (an intraclass correlation of 65 % to 87 % across four measures), which is why a personal
